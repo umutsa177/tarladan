@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "901907704204",
+    "project_id": "tarladan-fa8c9",
+    "storage_bucket": "tarladan-fa8c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901907704204:android:6695bc89ec217b1749cea9",
+        "android_client_info": {
+          "package_name": "com.umut.tarla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO0GuJIXWBdALyVzR0aaxdOtZosq5kRBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
