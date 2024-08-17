@@ -1,36 +1,48 @@
-import 'package:flutter/foundation.dart';
-import '../service/product_service.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 import '../model/product.dart';
 import 'auth_viewmodel.dart';
 
 class ProductViewModel extends ChangeNotifier {
-  final ProductService _productService = ProductService();
   final AuthViewModel _authViewModel;
-  List<Product> _products = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   ProductViewModel(this._authViewModel);
 
-  List<Product> get products => _products;
+  Future<void> addProduct(Product product, File imageFile) async {
+    try {
+      // Upload image to Firebase Storage
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference ref = _storage.ref().child('product_images/$fileName');
+      UploadTask uploadTask = ref.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
-  String? get currentUserId => _authViewModel.currentUser?.id;
-
-  Future<void> fetchProducts() async {
-    _products = await _productService.getProducts();
-    notifyListeners();
+      // Add product to Firestore with image URL
+      await _firestore.collection('products').add({
+        ...product.toMap(),
+        'imageUrl': imageUrl,
+        'sellerId': _authViewModel.currentUser?.id,
+      });
+      notifyListeners();
+    } catch (e) {
+      print('Error adding product: $e');
+    }
   }
 
-  Future<void> addProduct(Product product) async {
-    await _productService.addProduct(product);
-    await fetchProducts();
-  }
-
-  Future<void> updateProduct(Product product) async {
-    await _productService.updateProduct(product);
-    await fetchProducts();
-  }
-
-  Future<void> deleteProduct(String productId) async {
-    await _productService.deleteProduct(productId);
-    await fetchProducts();
+  Future<List<Product>> getProducts() async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('products').get();
+      return snapshot.docs
+          .map((doc) =>
+              Product.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+    } catch (e) {
+      print('Error getting products: $e');
+      return [];
+    }
   }
 }

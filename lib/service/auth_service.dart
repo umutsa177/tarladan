@@ -6,6 +6,22 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<bool> get isUserSeller async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot doc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          return (doc.data() as Map<String, dynamic>)['role'] == 'Satıcı';
+        }
+      } catch (e) {
+        print("Error checking user role: $e");
+      }
+    }
+    return false;
+  }
+
   Future<User?> register(
       String name, String email, String password, String role) async {
     try {
@@ -63,5 +79,14 @@ class AuthService {
       print(e.toString());
       return null;
     }
+  }
+
+  Stream<AppUser?> get user {
+    return _auth.authStateChanges().asyncMap((firebaseUser) async {
+      if (firebaseUser == null) {
+        return null;
+      }
+      return await getAppUser(firebaseUser.uid);
+    });
   }
 }

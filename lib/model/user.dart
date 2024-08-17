@@ -27,4 +27,6 @@ class AppUser {
       'role': role,
     };
   }
+
+  bool get isSeller => role == 'Satıcı';
 }

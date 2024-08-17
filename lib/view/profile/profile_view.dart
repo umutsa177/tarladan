@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kartal/kartal.dart';
 import '../../model/user.dart';
 import '../../service/auth_service.dart';
 
@@ -33,13 +34,14 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Profil'),
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
               await _authService.signOut();
-              Navigator.of(context).pushReplacementNamed('/login');
+              context.route.navigateName("/login");
             },
           ),
         ],
@@ -51,15 +53,15 @@ class _ProfileViewState extends State<ProfileView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Ad: ${_user!.name}',
+                  Text('Ad: ${_user?.name ?? "bilinmiyor"}',
                       style: const TextStyle(fontSize: 18)),
-                  const SizedBox(height: 8),
-                  Text('E-posta: ${_user!.email}',
+                  context.sized.emptySizedHeightBoxLow,
+                  Text('E-posta: ${_user?.email ?? "bilinmiyor"}',
                       style: const TextStyle(fontSize: 18)),
-                  const SizedBox(height: 8),
-                  Text('Rol: ${_user!.role}',
+                  context.sized.emptySizedHeightBoxLow,
+                  Text('Rol: ${_user?.role ?? "bilinmiyor"}',
                       style: const TextStyle(fontSize: 18)),
-                  const SizedBox(height: 24),
+                  context.sized.emptySizedHeightBoxLow3x,
                   ElevatedButton(
                     child: const Text('Profili Düzenle'),
                     onPressed: () {

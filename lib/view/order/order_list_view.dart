@@ -12,7 +12,7 @@ class OrderListView extends StatelessWidget {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Siparişlerim')),
+      appBar: AppBar(title: const Text('Siparişlerim'), centerTitle: true),
       body: FutureBuilder(
         future: orderViewModel.fetchOrders(authViewModel.currentUser!.id),
         builder: (context, snapshot) {

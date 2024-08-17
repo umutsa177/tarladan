@@ -1,4 +1,4 @@
-package com.example.tarladan
+package com.umut.tarla
 
 import io.flutter.embedding.android.FlutterActivity
 

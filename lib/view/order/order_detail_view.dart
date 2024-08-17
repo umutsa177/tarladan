@@ -14,6 +14,7 @@ class OrderDetailView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sipariş Detayı'),
+        centerTitle: true,
       ),
       body: FutureBuilder<Product?>(
         future: productService.getProduct(order.productId),
