@@ -4,7 +4,7 @@ class CustomerOrder {
   final String id;
   final String customerId;
   final String productId;
-  final String status;
+  late final String status;
   final DateTime createdAt;
   final int quantity;
   final double totalPrice;

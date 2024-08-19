@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/model/user.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
-import 'product/product_list_view.dart';
-import 'order/order_list_view.dart';
+import '../product/product_list_view.dart';
+import '../order/order_list_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});

@@ -17,32 +17,7 @@ class ProductListView extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Ürünler'),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
-        actions: [
-          Padding(
-            padding: context.padding.horizontalNormal,
-            child: InkWell(
-                child: CircleAvatar(
-                  backgroundColor: ColorConstant.greyShade300,
-                  child: IconConstant.appIcon.toImage,
-                ),
-                onTap: () => context.route.navigateName('/profile')),
-          ),
-        ],
-      ),
+      appBar: _appBar(context),
       body: Consumer<ProductViewModel>(
         builder: (context, productViewModel, child) {
           return FutureBuilder<List<Product>>(
@@ -52,7 +27,8 @@ class ProductListView extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(
-                    child: Text('Bir hata oluştu: ${snapshot.error}'));
+                    child: Text(
+                        '${StringConstant.anErrorOccurred}: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text(StringConstant.noProductYet));
               } else {
@@ -81,22 +57,55 @@ class ProductListView extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FutureBuilder<bool>(
-        future: authService.isUserSeller,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox.shrink(); // Yükleme sırasında butonu gizle
-          }
-          if (snapshot.hasData && snapshot.data == true) {
-            return FloatingActionButton(
-              child: const Icon(Icons.add, color: ColorConstant.white),
-              onPressed: () => context.route.navigateName('/add_product'),
-            );
-          } else {
-            return const SizedBox.shrink(); // Satıcı değilse butonu gösterme
-          }
+      floatingActionButton: _fabButton(authService),
+    );
+  }
+
+  FutureBuilder<bool> _fabButton(AuthService authService) {
+    return FutureBuilder<bool>(
+      future: authService.isUserSeller,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox.shrink(); // Yükleme sırasında butonu gizle
+        }
+        if (snapshot.hasData && snapshot.data == true) {
+          return FloatingActionButton(
+            child: const Icon(Icons.add, color: ColorConstant.white),
+            onPressed: () => context.route.navigateName('/add_product'),
+          );
+        } else {
+          return const SizedBox.shrink(); // Satıcı değilse butonu gösterme
+        }
+      },
+    );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      title: const Text(StringConstant.products),
+      leading: Builder(
+        builder: (BuildContext context) {
+          return IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          );
         },
       ),
+      actions: [
+        Padding(
+          padding: context.padding.horizontalNormal,
+          child: InkWell(
+              child: CircleAvatar(
+                backgroundColor: ColorConstant.greyShade300,
+                child: IconConstant.appIcon.toImage,
+              ),
+              onTap: () => context.route.navigateName('/profile')),
+        ),
+      ],
     );
   }
 }

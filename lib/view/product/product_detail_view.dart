@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
+import 'package:tarladan/utility/constants/string_constant.dart';
+import '../../model/order.dart';
+import '../../viewModel/auth_viewmodel.dart';
 import '../../viewModel/order_viewmodel.dart';
 import '../../model/product.dart';
 import '../../widgets/review_card.dart';
@@ -41,28 +44,27 @@ class _ProductDetailViewState extends State<ProductDetailView> {
       if (sellerDoc.exists) {
         Map<String, dynamic> sellerData =
             sellerDoc.data() as Map<String, dynamic>;
-        return sellerData['name'] ?? 'İsimsiz Satıcı';
+        return sellerData['name'] ?? StringConstant.noNameSeller;
       } else {
-        return 'Bilinmeyen Satıcı';
+        return StringConstant.unknownSeller;
       }
     } catch (e) {
-      print('Satıcı adı alınırken hata oluştu: $e');
-      return 'Satıcı Bilgisi Alınamadı';
+      print('${StringConstant.sellerNameError}: $e');
+      return StringConstant.noSellerInfo;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final product = ModalRoute.of(context)?.settings.arguments as Product?;
+    final orderViewModel = Provider.of<OrderViewModel>(context);
 
     if (product == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Hata'), centerTitle: true),
-        body: const Center(child: Text('Ürün bilgisi bulunamadı.')),
+        appBar: AppBar(title: const Text(StringConstant.error)),
+        body: const Center(child: Text(StringConstant.noProductInfo)),
       );
     }
-
-    final orderViewModel = Provider.of<OrderViewModel>(context);
 
     return Scaffold(
       appBar: _appBar(product, context),
@@ -71,8 +73,12 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Image.network(product.imageUrl,
-                  height: 250, width: 250, fit: BoxFit.cover),
+              child: Image.network(
+                product.imageUrl,
+                height: 250,
+                width: 250,
+                fit: BoxFit.cover,
+              ),
             ),
             context.sized.emptySizedHeightBoxLow,
             Padding(
@@ -96,7 +102,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                             return const CircularProgressIndicator();
                           }
                           return Text(
-                            "Satıcı: ${snapshot.data ?? 'Yükleniyor...'}",
+                            "${StringConstant.seller}: ${snapshot.data ?? StringConstant.loading}",
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -113,24 +119,24 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                   context.sized.emptySizedHeightBoxLow,
                   Text(product.description),
                   context.sized.emptySizedHeightBoxLow,
-                  Text('Teslimat Alanı: ${product.deliveryArea}'),
+                  Text(
+                      '${StringConstant.deliveryArea}: ${product.deliveryArea}'),
                   context.sized.emptySizedHeightBoxLow,
-                  Text('Teslimat Süresi: ${product.deliveryTime} gün'),
+                  Text(
+                      '${StringConstant.noDateDeliveryTime}: ${product.deliveryTime} gün'),
                   context.sized.emptySizedHeightBoxLow,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Fiyat
                       Text(
                         '${product.price} TL',
                         style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.green,
+                            fontSize: 25,
+                            color: ColorConstant.black,
                             fontWeight: FontWeight.bold),
                       ),
-                      // Miktar ayarlama
                       Container(
-                        height: context.sized.lowValue,
+                        height: context.sized.highValue / 2,
                         decoration: BoxDecoration(
                           border: Border.all(color: ColorConstant.black),
                           borderRadius: context.border.highBorderRadius,
@@ -152,25 +158,53 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                           ],
                         ),
                       ),
-                      // Satın al butonu
                       ElevatedButton(
-                        onPressed: () {
-                          // Satın alma işlemi
+                        onPressed: () async {
+                          final String userId =
+                              Provider.of<AuthViewModel>(context, listen: false)
+                                  .currentUser!
+                                  .id;
+                          final order = CustomerOrder(
+                            id: '', // Firestore bunu oluşturacak
+                            customerId: userId,
+                            productId: product.id,
+                            status: StringConstant.completed,
+                            createdAt: DateTime.now(),
+                            quantity: _quantity,
+                            totalPrice: product.price * _quantity,
+                          );
+                          await orderViewModel.createOrder(order);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            snackBarAnimationStyle: AnimationStyle(
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeInCubic,
+                            ),
+                            SnackBar(
+                              backgroundColor: ColorConstant.greenAccent,
+                              content: Text(
+                                '${product.name} başarıyla satın alındı',
+                                style:
+                                    const TextStyle(color: ColorConstant.white),
+                              ),
+                            ),
+                          );
+                          context.route.navigation.pop(); // Önceki ekrana dön
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorConstant.green,
-                          fixedSize: Size.fromWidth(context.sized.width / 3.5),
+                          fixedSize: Size.fromWidth(context.sized.width / 4.75),
                         ),
                         child: const Text(
-                          'Satın Al',
+                          StringConstant.buy,
                           style: TextStyle(fontSize: 12),
                         ),
                       ),
                     ],
                   ),
-                  const Text('Yorumlar',
+                  context.sized.emptySizedHeightBoxLow,
+                  const Text(StringConstant.comments,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   FutureBuilder(
                     future: orderViewModel.getReviewsForProduct(product.id),
                     builder: (context, snapshot) {
@@ -185,7 +219,8 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                               .toList(),
                         );
                       } else {
-                        return const Center(child: Text('Henüz yorum yok.'));
+                        return const Center(
+                            child: Text(StringConstant.noCommentsYet));
                       }
                     },
                   ),
@@ -195,20 +230,12 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Sipariş oluşturma işlemi
-        },
-        label: const Text('Sipariş Ver'),
-        icon: const Icon(Icons.shopping_cart),
-      ),
     );
   }
 
   AppBar _appBar(Product product, BuildContext context) {
     return AppBar(
       title: Text(product.name),
-      centerTitle: true,
       automaticallyImplyLeading: false,
       leading: IconButton(
           onPressed: () => context.route.pop(),

@@ -52,6 +52,8 @@ class AppTheme {
         scaffoldBackgroundColor: ColorConstant.white,
         appBarTheme: const AppBarTheme(
           backgroundColor: ColorConstant.white,
+          centerTitle: true,
         ),
+        cardColor: ColorConstant.greyBackground, // fix
       );
 }

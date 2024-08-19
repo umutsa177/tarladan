@@ -5,8 +5,10 @@ import 'package:tarladan/service/auth_service.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/initialize/app_theme.dart';
 import 'package:tarladan/view/auth/register_view.dart';
-import 'package:tarladan/view/home_view.dart';
+import 'package:tarladan/view/home/home_view.dart';
+import 'package:tarladan/view/order/order_detail_view.dart';
 import 'package:tarladan/view/product/product_detail_view.dart';
+import 'model/order.dart';
 import 'view/profile/profile_view.dart';
 import 'viewModel/auth_viewmodel.dart';
 import 'viewModel/product_viewmodel.dart';
@@ -57,6 +59,15 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => const ProfileView(),
           '/register': (context) => const RegisterView(),
           '/product_detail': (context) => const ProductDetailView(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/order_detail') {
+            final order = settings.arguments as CustomerOrder;
+            return MaterialPageRoute(
+              builder: (context) => OrderDetailView(order: order),
+            );
+          }
+          return null;
         },
       ),
     );

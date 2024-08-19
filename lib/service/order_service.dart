@@ -16,7 +16,7 @@ class OrderService {
               CustomerOrder.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
     } catch (e) {
-      print(e.toString());
+      print('Sipariş getirme hatası: ${e.toString()}');
       return [];
     }
   }

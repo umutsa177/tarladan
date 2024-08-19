@@ -7,7 +7,7 @@ class Product {
   final String imageUrl;
   final double deliveryTime;
   final String deliveryArea;
-  final String sellerId; // Yeni eklenen alan
+  final String sellerId;
 
   Product({
     required this.id,
@@ -18,7 +18,7 @@ class Product {
     required this.amount,
     required this.deliveryTime,
     required this.deliveryArea,
-    required this.sellerId, // Yeni eklenen alan
+    required this.sellerId,
   });
 
   factory Product.fromMap(Map<String, dynamic> data, String id) {
@@ -31,7 +31,7 @@ class Product {
       imageUrl: data['imageUrl'] ?? '',
       deliveryTime: (data['deliveryTime'] ?? 0).toDouble(),
       deliveryArea: data['deliveryArea'] ?? '',
-      sellerId: data['sellerId'] ?? '', // Yeni eklenen alan
+      sellerId: data['sellerId'] ?? '',
     );
   }
 
@@ -44,7 +44,7 @@ class Product {
       'imageUrl': imageUrl,
       'deliveryTime': deliveryTime,
       'deliveryArea': deliveryArea,
-      'sellerId': sellerId, // Yeni eklenen alan
+      'sellerId': sellerId,
     };
   }
 }

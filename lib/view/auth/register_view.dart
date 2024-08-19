@@ -24,11 +24,7 @@ class _RegisterViewState extends State<RegisterView> {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(StringConstant.signUp),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      appBar: _appBar(),
       body: Padding(
         padding: context.padding.normal,
         child: Column(
@@ -51,27 +47,7 @@ class _RegisterViewState extends State<RegisterView> {
               labelText: StringConstant.password,
             ),
             context.sized.emptySizedHeightBoxLow,
-            DropdownButton<String>(
-              value: selectedRole,
-              items: [(StringConstant.customer), (StringConstant.seller)]
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value == StringConstant.customer
-                        ? StringConstant.customer
-                        : StringConstant.seller,
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedRole = newValue;
-                  });
-                }
-              },
-            ),
+            _selectRoleButton(),
             context.sized.emptySizedHeightBoxLow3x,
             _signupButton(authViewModel, context),
             context.sized.emptySizedHeightBoxLow,
@@ -79,6 +55,37 @@ class _RegisterViewState extends State<RegisterView> {
           ],
         ),
       ),
+    );
+  }
+
+  DropdownButton<String> _selectRoleButton() {
+    return DropdownButton<String>(
+      value: selectedRole,
+      items: [(StringConstant.customer), (StringConstant.seller)]
+          .map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(
+            value == StringConstant.customer
+                ? StringConstant.customer
+                : StringConstant.seller,
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() {
+            selectedRole = newValue;
+          });
+        }
+      },
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: const Text(StringConstant.signUp),
+      automaticallyImplyLeading: false,
     );
   }
 

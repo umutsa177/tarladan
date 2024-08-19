@@ -17,11 +17,7 @@ class LoginView extends StatelessWidget {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(StringConstant.signIn),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      appBar: _appBar(),
       body: Padding(
         padding: context.padding.normal,
         child: Column(
@@ -45,6 +41,13 @@ class LoginView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: const Text(StringConstant.signIn),
+      automaticallyImplyLeading: false,
     );
   }
 

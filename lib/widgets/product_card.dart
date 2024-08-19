@@ -1,8 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:provider/provider.dart';
+import 'package:tarladan/model/order.dart';
 import 'package:tarladan/model/product.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
+import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/viewModel/order_viewmodel.dart';
+
+import '../viewModel/auth_viewmodel.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -14,6 +20,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orderViewModel = Provider.of<OrderViewModel>(context, listen: false);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: context.border.normalBorderRadius,
@@ -23,8 +31,9 @@ class ProductCard extends StatelessWidget {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
+              borderRadius: BorderRadius.vertical(
+                top: context.border.normalRadius,
+              ),
               child: CachedNetworkImage(
                 imageUrl: product.imageUrl,
                 fit: BoxFit.cover,
@@ -51,7 +60,36 @@ class ProductCard extends StatelessWidget {
                     Text('${product.price.toStringAsFixed(2)} TL',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                     IconButton(
-                      onPressed: () {}, // SİPARİŞLERE EKLE
+                      onPressed: () async {
+                        final String userId =
+                            Provider.of<AuthViewModel>(context, listen: false)
+                                .currentUser!
+                                .id;
+                        final order = CustomerOrder(
+                          id: '', // Firestore bunu oluşturacak
+                          customerId: userId,
+                          productId: product.id,
+                          status: StringConstant.pending,
+                          createdAt: DateTime.now(),
+                          quantity: 1,
+                          totalPrice: product.price,
+                        );
+                        await orderViewModel.createOrder(order);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          snackBarAnimationStyle: AnimationStyle(
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeInCubic,
+                          ),
+                          SnackBar(
+                            backgroundColor: ColorConstant.greenAccent,
+                            content: Text(
+                              '${product.name} siparişlere eklendi',
+                              style:
+                                  const TextStyle(color: ColorConstant.white),
+                            ),
+                          ),
+                        );
+                      },
                       icon: const Icon(
                         Icons.add_box_rounded,
                         color: ColorConstant.green,
