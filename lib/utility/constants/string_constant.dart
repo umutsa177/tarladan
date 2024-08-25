@@ -41,9 +41,29 @@ class StringConstant {
   static const myOrders = 'Siparişlerim';
   static const pending = 'beklemede';
   static const completed = 'tamamlandı';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
+  static const unknown = 'bilinmiyor';
+  static const editProfile = 'Profili Düzenle';
+  static const profile = 'Profil';
+  static const role = 'Rol';
+  static const cancel = 'İptal';
+  static const exit = 'Çıkış Yap';
+  static const areYouSureToExit = 'Çıkış yapmak istediğinize emin misiniz?';
+  static const changePassword = 'Şifre Değiştir';
+  static const save = 'Kaydet';
+  static const String currentPassword = 'Mevcut Şifre';
+  static const String newPassword = 'Yeni Şifre';
+  static const String confirmNewPassword = 'Yeni Şifre (Tekrar)';
+  static const String pleaseEnterName = 'Lütfen adınızı girin';
+  static const String pleaseEnterCurrentPassword =
+      'Lütfen mevcut şifrenizi girin';
+  static const String pleaseEnterNewPassword = 'Lütfen yeni şifrenizi girin';
+  static const String passwordMustBeAtLeast6Characters =
+      'Şifre en az 6 karakter olmalıdır';
+  static const String passwordsDoNotMatch = 'Şifreler eşleşmiyor';
+  static const String edit = 'Düzenle';
+  static const String profileUpdatedSuccessfully =
+      'Profil başarıyla güncellendi';
+  static const phoneNumber = 'Telefon Numarası';
+  static const phone = 'Telefon';
   // static const appTitle = 'Tarladan';
 }

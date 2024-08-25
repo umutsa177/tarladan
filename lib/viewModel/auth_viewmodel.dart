@@ -8,13 +8,18 @@ class AuthViewModel extends ChangeNotifier {
 
   AppUser? get currentUser => _currentUser;
 
-  Future<bool> register(
-      String name, String email, String password, String role) async {
+  Future<bool> register(String name, String email, String password, String role,
+      String phoneNumber) async {
     try {
-      final user = await _authService.register(name, email, password, role);
+      final user =
+          await _authService.register(name, email, password, role, phoneNumber);
       if (user != null) {
-        _currentUser =
-            AppUser(id: user.uid, name: name, email: email, role: role);
+        _currentUser = AppUser(
+            id: user.uid,
+            name: name,
+            email: email,
+            role: role,
+            phoneNumber: phoneNumber);
         notifyListeners();
         return true;
       }

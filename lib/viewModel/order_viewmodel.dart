@@ -10,13 +10,42 @@ class OrderViewModel extends ChangeNotifier {
   List<CustomerOrder> get orders => _orders;
 
   Future<void> fetchOrders(String userId) async {
-    _orders = await _orderService.getOrders(userId);
-    notifyListeners();
+    try {
+      _orders = await _orderService.getOrders(userId);
+      notifyListeners();
+    } catch (e) {
+      print('Error fetching orders: $e');
+    }
+  }
+
+  Future<void> removeOrder(String orderId) async {
+    try {
+      await _orderService.deleteOrder(orderId);
+      _orders.removeWhere((order) => order.id == orderId);
+      notifyListeners();
+    } catch (e) {
+      print('Error removing order: $e');
+      rethrow;
+    }
   }
 
   Future<void> createOrder(CustomerOrder order) async {
     await _orderService.createOrder(order);
     await fetchOrders(order.customerId);
+  }
+
+  Future<void> updateOrder(String orderId, String newStatus) async {
+    try {
+      await _orderService.updateOrderStatus(orderId, newStatus);
+      int index = _orders.indexWhere((order) => order.id == orderId);
+      if (index != -1) {
+        _orders[index] = _orders[index].copyWith(status: newStatus);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error updating order: $e');
+      rethrow;
+    }
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {

@@ -29,14 +29,24 @@ class OrderService {
     }
   }
 
-  Future<void> updateOrderStatus(String orderId, String status) async {
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
     try {
       await _firestore
           .collection('orders')
           .doc(orderId)
-          .update({'status': status});
+          .update({'status': newStatus});
     } catch (e) {
-      print(e.toString());
+      print('Error updating order status: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteOrder(String orderId) async {
+    try {
+      await _firestore.collection('orders').doc(orderId).delete();
+    } catch (e) {
+      print('Error deleting order: $e');
+      rethrow;
     }
   }
 

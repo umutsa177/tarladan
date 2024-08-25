@@ -7,6 +7,7 @@ import 'package:tarladan/model/product.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/viewModel/order_viewmodel.dart';
+import 'package:tarladan/viewModel/product_viewmodel.dart';
 
 import '../viewModel/auth_viewmodel.dart';
 
@@ -21,6 +22,13 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final orderViewModel = Provider.of<OrderViewModel>(context, listen: false);
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final productViewModel =
+        Provider.of<ProductViewModel>(context, listen: false);
+
+    final isCustomer =
+        authViewModel.currentUser?.role == StringConstant.customer;
+    final isSeller = authViewModel.currentUser?.role == StringConstant.seller;
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -59,43 +67,71 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Text('${product.price.toStringAsFixed(2)} TL',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
-                    IconButton(
-                      onPressed: () async {
-                        final String userId =
-                            Provider.of<AuthViewModel>(context, listen: false)
-                                .currentUser!
-                                .id;
-                        final order = CustomerOrder(
-                          id: '', // Firestore bunu oluşturacak
-                          customerId: userId,
-                          productId: product.id,
-                          status: StringConstant.pending,
-                          createdAt: DateTime.now(),
-                          quantity: 1,
-                          totalPrice: product.price,
-                        );
-                        await orderViewModel.createOrder(order);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          snackBarAnimationStyle: AnimationStyle(
-                            duration: const Duration(seconds: 1),
-                            curve: Curves.easeInCubic,
-                          ),
-                          SnackBar(
-                            backgroundColor: ColorConstant.greenAccent,
-                            content: Text(
-                              '${product.name} siparişlere eklendi',
-                              style:
-                                  const TextStyle(color: ColorConstant.white),
+                    if (isCustomer)
+                      IconButton(
+                        onPressed: () async {
+                          final String userId = authViewModel.currentUser!.id;
+                          final order = CustomerOrder(
+                            id: '',
+                            customerId: userId,
+                            productId: product.id,
+                            status: StringConstant.pending,
+                            createdAt: DateTime.now(),
+                            quantity: 1,
+                            totalPrice: product.price,
+                          );
+                          await orderViewModel.createOrder(order);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: ColorConstant.greenAccent,
+                              content: Text(
+                                '${product.name} siparişlere eklendi',
+                                style:
+                                    const TextStyle(color: ColorConstant.white),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.add_box_rounded,
-                        color: ColorConstant.green,
-                        size: 42,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.add_box_rounded,
+                          color: ColorConstant.green,
+                          size: 42,
+                        ),
                       ),
-                    ),
+                    if (isSeller)
+                      IconButton(
+                        onPressed: () async {
+                          try {
+                            await productViewModel.deleteProduct(product.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: ColorConstant.red,
+                                content: Text(
+                                  '${product.name} silindi',
+                                  style: const TextStyle(
+                                      color: ColorConstant.white),
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: ColorConstant.red,
+                                content: Text(
+                                  'Ürün silinirken bir hata oluştu: $e',
+                                  style: const TextStyle(
+                                      color: ColorConstant.white),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: ColorConstant.red,
+                          size: 42,
+                        ),
+                      ),
                   ],
                 ),
               ],

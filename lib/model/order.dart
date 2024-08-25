@@ -4,7 +4,7 @@ class CustomerOrder {
   final String id;
   final String customerId;
   final String productId;
-  late final String status;
+  String status;
   final DateTime createdAt;
   final int quantity;
   final double totalPrice;
@@ -40,5 +40,25 @@ class CustomerOrder {
       'quantity': quantity,
       'totalPrice': totalPrice,
     };
+  }
+
+  CustomerOrder copyWith({
+    String? id,
+    String? customerId,
+    String? productId,
+    String? status,
+    DateTime? createdAt,
+    int? quantity,
+    double? totalPrice,
+  }) {
+    return CustomerOrder(
+      id: id ?? this.id,
+      customerId: customerId ?? this.customerId,
+      productId: productId ?? this.productId,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      quantity: quantity ?? this.quantity,
+      totalPrice: totalPrice ?? this.totalPrice,
+    );
   }
 }

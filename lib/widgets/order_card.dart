@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-
+import 'package:kartal/kartal.dart';
+import 'package:tarladan/utility/constants/string_constant.dart';
 import '../utility/constants/color_constant.dart';
 
-class OrderListTile extends StatelessWidget {
+class OrderCard extends StatelessWidget {
+  final String orderId;
   final String title;
   final String status;
   final String price;
   final VoidCallback? onTap;
 
-  const OrderListTile({
+  const OrderCard({
     super.key,
+    required this.orderId,
     required this.title,
     required this.status,
     required this.price,
@@ -20,11 +23,10 @@ class OrderListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      elevation: 2,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: context.padding.normal,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,7 +37,7 @@ class OrderListTile extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              context.sized.emptySizedHeightBoxLow,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -45,7 +47,7 @@ class OrderListTile extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.green,
+                      color: ColorConstant.green,
                     ),
                   ),
                 ],
@@ -60,10 +62,10 @@ class OrderListTile extends StatelessWidget {
   Widget buildStatusChip(String status) {
     Color chipColor;
     switch (status.toLowerCase()) {
-      case 'beklemede':
+      case StringConstant.pending:
         chipColor = ColorConstant.coral;
         break;
-      case 'tamamlandı':
+      case StringConstant.completed:
         chipColor = ColorConstant.green;
         break;
       default:
@@ -73,7 +75,7 @@ class OrderListTile extends StatelessWidget {
     return Chip(
       label: Text(
         status,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: ColorConstant.white),
       ),
       backgroundColor: chipColor,
     );

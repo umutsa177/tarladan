@@ -22,8 +22,8 @@ class AuthService {
     return false;
   }
 
-  Future<User?> register(
-      String name, String email, String password, String role) async {
+  Future<User?> register(String name, String email, String password,
+      String role, String phoneNumber) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -36,6 +36,7 @@ class AuthService {
           'name': name,
           'email': email,
           'role': role,
+          'phoneNumber': phoneNumber,
         });
       }
 
@@ -88,5 +89,50 @@ class AuthService {
       }
       return await getAppUser(firebaseUser.uid);
     });
+  }
+
+  Future<void> updateUserProfile(String userId, String newName) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'name': newName,
+      });
+
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.updateProfile(displayName: newName);
+      }
+    } catch (e) {
+      print('Profil güncelleme hatası: $e');
+      throw Exception('Profil güncellenirken bir hata oluştu');
+    }
+  }
+
+  Future<void> changePassword(
+      String userId, String currentPassword, String newPassword) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: currentPassword,
+        );
+        await user.reauthenticateWithCredential(credential);
+        await user.updatePassword(newPassword);
+      } else {
+        throw Exception('Kullanıcı oturumu bulunamadı');
+      }
+    } catch (e) {
+      print('Şifre değiştirme hatası: $e');
+      if (e is FirebaseAuthException) {
+        if (e.code == 'wrong-password') {
+          throw Exception('Mevcut şifre yanlış');
+        } else {
+          throw Exception(
+              'Şifre değiştirilirken bir hata oluştu: ${e.message}');
+        }
+      } else {
+        throw Exception('Şifre değiştirilirken bir hata oluştu');
+      }
+    }
   }
 }

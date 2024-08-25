@@ -58,6 +58,11 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   Widget build(BuildContext context) {
     final product = ModalRoute.of(context)?.settings.arguments as Product?;
     final orderViewModel = Provider.of<OrderViewModel>(context);
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
+    // Kullanıcının rolünü kontrol et
+    final isCustomer =
+        authViewModel.currentUser?.role == StringConstant.customer;
 
     if (product == null) {
       return Scaffold(
@@ -73,11 +78,16 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Image.network(
-                product.imageUrl,
-                height: 250,
+              child: Container(
                 width: 250,
-                fit: BoxFit.cover,
+                height: 250,
+                decoration: BoxDecoration(
+                  borderRadius: context.border.normalBorderRadius,
+                  image: DecorationImage(
+                    image: NetworkImage(product.imageUrl),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
             context.sized.emptySizedHeightBoxLow,
@@ -128,77 +138,10 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${product.price} TL',
-                        style: const TextStyle(
-                            fontSize: 25,
-                            color: ColorConstant.black,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        height: context.sized.highValue / 2,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorConstant.black),
-                          borderRadius: context.border.highBorderRadius,
-                        ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: _decrementQuantity,
-                            ),
-                            Text(
-                              '$_quantity',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: _incrementQuantity,
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final String userId =
-                              Provider.of<AuthViewModel>(context, listen: false)
-                                  .currentUser!
-                                  .id;
-                          final order = CustomerOrder(
-                            id: '', // Firestore bunu oluşturacak
-                            customerId: userId,
-                            productId: product.id,
-                            status: StringConstant.completed,
-                            createdAt: DateTime.now(),
-                            quantity: _quantity,
-                            totalPrice: product.price * _quantity,
-                          );
-                          await orderViewModel.createOrder(order);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            snackBarAnimationStyle: AnimationStyle(
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeInCubic,
-                            ),
-                            SnackBar(
-                              backgroundColor: ColorConstant.greenAccent,
-                              content: Text(
-                                '${product.name} başarıyla satın alındı',
-                                style:
-                                    const TextStyle(color: ColorConstant.white),
-                              ),
-                            ),
-                          );
-                          context.route.navigation.pop(); // Önceki ekrana dön
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorConstant.green,
-                          fixedSize: Size.fromWidth(context.sized.width / 4.75),
-                        ),
-                        child: const Text(
-                          StringConstant.buy,
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
+                      _priceText(product),
+                      if (isCustomer) _incrementAndDecrementButton(context),
+                      if (isCustomer)
+                        _buyButton(context, product, orderViewModel),
                     ],
                   ),
                   context.sized.emptySizedHeightBoxLow,
@@ -229,6 +172,84 @@ class _ProductDetailViewState extends State<ProductDetailView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Text _priceText(Product product) {
+    return Text(
+      '${product.price} TL',
+      style: const TextStyle(
+          fontSize: 25,
+          color: ColorConstant.black,
+          fontWeight: FontWeight.bold),
+    );
+  }
+
+  ElevatedButton _buyButton(
+      BuildContext context, Product product, OrderViewModel orderViewModel) {
+    return ElevatedButton(
+      onPressed: () async {
+        final String userId =
+            Provider.of<AuthViewModel>(context, listen: false).currentUser!.id;
+        final order = CustomerOrder(
+          id: '',
+          customerId: userId,
+          productId: product.id,
+          status: StringConstant.completed,
+          createdAt: DateTime.now(),
+          quantity: _quantity,
+          totalPrice: product.price * _quantity,
+        );
+        await orderViewModel.createOrder(order);
+        ScaffoldMessenger.of(context).showSnackBar(
+          snackBarAnimationStyle: AnimationStyle(
+            duration: const Duration(seconds: 1),
+            curve: Curves.bounceInOut,
+          ),
+          SnackBar(
+            backgroundColor: ColorConstant.greenAccent,
+            content: Text(
+              '${product.name} başarıyla satın alındı',
+              style: const TextStyle(color: ColorConstant.white),
+            ),
+          ),
+        );
+        context.route.navigation.pop(); // Önceki ekrana dön
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ColorConstant.green,
+        fixedSize: Size.fromWidth(context.sized.width / 4.75),
+      ),
+      child: const Text(
+        StringConstant.buy,
+        style: TextStyle(fontSize: 12),
+      ),
+    );
+  }
+
+  Container _incrementAndDecrementButton(BuildContext context) {
+    return Container(
+      height: context.sized.highValue / 2,
+      decoration: BoxDecoration(
+        border: Border.all(color: ColorConstant.black),
+        borderRadius: context.border.highBorderRadius,
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed: _decrementQuantity,
+          ),
+          Text(
+            '$_quantity',
+            style: const TextStyle(fontSize: 18),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _incrementQuantity,
+          ),
+        ],
       ),
     );
   }

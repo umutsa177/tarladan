@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import '../../model/user.dart';
 import '../../service/auth_service.dart';
+import '../../utility/constants/string_constant.dart';
+import '../../utility/constants/color_constant.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -34,44 +36,158 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Profil'),
+        title: const Text(StringConstant.profile),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await _authService.signOut();
-              context.route.navigateName("/login");
+            onPressed: () => _showLogoutDialog(context),
+          ),
+        ],
+        leading: IconButton(
+            onPressed: () => context.route.pop(),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+      ),
+      body: _user == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildProfileHeader(),
+                  _buildProfileInfo(),
+                  _buildProfileActions(),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      decoration: BoxDecoration(
+        borderRadius: context.border.normalBorderRadius,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [ColorConstant.black, ColorConstant.black.withOpacity(0.8)],
+        ),
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.white,
+            child: Text(
+              _user?.name.substring(0, 1).toUpperCase() ?? '?',
+              style: const TextStyle(fontSize: 40, color: ColorConstant.black),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _user?.name ?? StringConstant.unknown,
+            style: const TextStyle(
+                fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _user?.email ?? StringConstant.unknown,
+            style: TextStyle(fontSize: 16, color: ColorConstant.greyBackground),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileInfo() {
+    return Padding(
+      padding: context.padding.normal,
+      child: Column(
+        children: [
+          _buildInfoTile(Icons.person, StringConstant.nameSurname,
+              _user?.name ?? StringConstant.unknown),
+          _buildInfoTile(Icons.email, StringConstant.mail,
+              _user?.email ?? StringConstant.unknown),
+          _buildInfoTile(Icons.phone, StringConstant.phone,
+              _user?.phoneNumber ?? StringConstant.unknown),
+          _buildInfoTile(Icons.badge, StringConstant.role,
+              _user?.role ?? StringConstant.unknown),
+          _buildInfoTile(Icons.lock, StringConstant.password, '********'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoTile(IconData icon, String title, String value) {
+    return ListTile(
+      leading: Icon(icon, color: ColorConstant.grey),
+      title: Text(title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      subtitle: Text(value, style: const TextStyle(fontSize: 16)),
+    );
+  }
+
+  Widget _buildProfileActions() {
+    return Padding(
+      padding: context.padding.normal,
+      child: Column(
+        children: [
+          ElevatedButton.icon(
+            icon: const Icon(Icons.edit),
+            label: const Text(StringConstant.editProfile),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: ColorConstant.grey,
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () {
+              // Profil düzenleme sayfasına yönlendirme
+              // Navigator.of(context).pushNamed('/edit-profile');
+            },
+          ),
+          SizedBox(height: context.sized.normalValue),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.lock),
+            label: const Text(StringConstant.changePassword),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: ColorConstant.grey,
+              side: const BorderSide(color: ColorConstant.black),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () {
+              // Şifre değiştirme sayfasına yönlendirme
+              // Navigator.of(context).pushNamed('/change-password');
             },
           ),
         ],
       ),
-      body: _user == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Ad: ${_user?.name ?? "bilinmiyor"}',
-                      style: const TextStyle(fontSize: 18)),
-                  context.sized.emptySizedHeightBoxLow,
-                  Text('E-posta: ${_user?.email ?? "bilinmiyor"}',
-                      style: const TextStyle(fontSize: 18)),
-                  context.sized.emptySizedHeightBoxLow,
-                  Text('Rol: ${_user?.role ?? "bilinmiyor"}',
-                      style: const TextStyle(fontSize: 18)),
-                  context.sized.emptySizedHeightBoxLow3x,
-                  ElevatedButton(
-                    child: const Text('Profili Düzenle'),
-                    onPressed: () {
-                      // Profil düzenleme sayfasına yönlendirme yapılabilir
-                      // Navigator.of(context).pushNamed('/edit-profile');
-                    },
-                  ),
-                ],
-              ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(StringConstant.exit),
+          content: const Text(StringConstant.areYouSureToExit),
+          actions: [
+            TextButton(
+              child: const Text(StringConstant.cancel),
+              onPressed: () => context.route.pop(),
             ),
+            TextButton(
+              child: const Text(StringConstant.exit),
+              onPressed: () async {
+                await _authService.signOut();
+                context.route.pop();
+                context.route.navigateName("/login");
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -13,12 +13,11 @@ class AppTheme {
         cardTheme: CardTheme(
           color: ColorConstant.white,
           elevation: 3,
-          margin: context.padding.low,
+          margin: context.padding.low / 2,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: ColorConstant.lightGreenAccent,
           elevation: 12,
-          // shape: CircleBorder(),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
@@ -55,5 +54,8 @@ class AppTheme {
           centerTitle: true,
         ),
         cardColor: ColorConstant.greyBackground, // fix
+        chipTheme: const ChipThemeData(
+          side: BorderSide(style: BorderStyle.none),
+        ),
       );
 }

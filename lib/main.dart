@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tarladan/service/auth_service.dart';
+import 'package:tarladan/service/product_service.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/initialize/app_theme.dart';
 import 'package:tarladan/view/auth/register_view.dart';
@@ -32,12 +33,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (_) => AuthService()),
+        Provider<ProductService>(create: (_) => ProductService()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProxyProvider<AuthViewModel, ProductViewModel>(
+        ChangeNotifierProxyProvider2<AuthViewModel, ProductService,
+            ProductViewModel>(
           create: (context) => ProductViewModel(
-              Provider.of<AuthViewModel>(context, listen: false)),
-          update: (context, authViewModel, previousProductViewModel) =>
-              ProductViewModel(authViewModel),
+              Provider.of<AuthViewModel>(context, listen: false),
+              Provider.of<ProductService>(context, listen: false)),
+          update: (context, authViewModel, productService,
+                  previousProductViewModel) =>
+              ProductViewModel(authViewModel, productService),
         ),
         ChangeNotifierProvider(create: (_) => OrderViewModel()),
         // ChangeNotifierProvider(create: (_) => ReviewViewModel()),

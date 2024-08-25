@@ -17,6 +17,7 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   String selectedRole = StringConstant.customer;
 
   @override
@@ -27,32 +28,49 @@ class _RegisterViewState extends State<RegisterView> {
       appBar: _appBar(),
       body: Padding(
         padding: context.padding.normal,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AuthTextfield(
-                icon: const Icon(Icons.person),
-                labelText: StringConstant.nameSurname,
-                controller: _nameController),
-            context.sized.emptySizedHeightBoxLow,
-            AuthTextfield(
-              icon: const Icon(Icons.mail_outline_rounded),
-              controller: _emailController,
-              labelText: StringConstant.mail,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AuthTextfield(
+                  icon: const Icon(Icons.person),
+                  labelText: StringConstant.nameSurname,
+                  keyboardType: TextInputType.name,
+                  controller: _nameController,
+                ),
+                context.sized.emptySizedHeightBoxLow,
+                AuthTextfield(
+                  icon: const Icon(Icons.phone),
+                  controller: _phoneController,
+                  labelText: StringConstant.phoneNumber,
+                  keyboardType: TextInputType.phone,
+                ),
+                context.sized.emptySizedHeightBoxLow,
+                AuthTextfield(
+                  icon: const Icon(Icons.mail_outline_rounded),
+                  controller: _emailController,
+                  labelText: StringConstant.mail,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                context.sized.emptySizedHeightBoxLow,
+                AuthTextfield(
+                  icon: const Icon(Icons.visibility_off),
+                  controller: _passwordController,
+                  labelText: StringConstant.password,
+                  keyboardType: TextInputType.visiblePassword,
+                  obscureText: true,
+                  textInputAction: TextInputAction.done,
+                ),
+                context.sized.emptySizedHeightBoxLow,
+                _selectRoleButton(),
+                context.sized.emptySizedHeightBoxLow,
+                _signupButton(authViewModel, context),
+                context.sized.emptySizedHeightBoxLow,
+                _isLoginButton(context),
+              ],
             ),
-            context.sized.emptySizedHeightBoxLow,
-            AuthTextfield(
-              icon: const Icon(Icons.visibility_outlined),
-              controller: _passwordController,
-              labelText: StringConstant.password,
-            ),
-            context.sized.emptySizedHeightBoxLow,
-            _selectRoleButton(),
-            context.sized.emptySizedHeightBoxLow3x,
-            _signupButton(authViewModel, context),
-            context.sized.emptySizedHeightBoxLow,
-            _isLoginButton(context),
-          ],
+          ),
         ),
       ),
     );
@@ -105,6 +123,7 @@ class _RegisterViewState extends State<RegisterView> {
           _emailController.text,
           _passwordController.text,
           selectedRole,
+          _phoneController.text,
         );
         if (success) {
           context.route.navigateName("/login");

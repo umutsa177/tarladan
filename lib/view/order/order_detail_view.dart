@@ -17,8 +17,7 @@ class OrderDetailView extends StatefulWidget {
 
 class _OrderDetailViewState extends State<OrderDetailView> {
   final ProductService productService = ProductService();
-  final OrderService orderService =
-      OrderService(); // OrderService örneği oluşturun
+  final OrderService orderService = OrderService();
   late CustomerOrder _order;
 
   @override
@@ -98,10 +97,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       product.deliveryTime.toString()),
                   if (_order.status == StringConstant.pending)
                     Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: ElevatedButton(
-                        onPressed: _updateOrderStatus,
-                        child: const Text('Satın Al'),
+                      padding: EdgeInsets.only(top: context.padding.normal.top),
+                      child: Center(
+                        child: ElevatedButton(
+                          onPressed: _updateOrderStatus,
+                          child: const Text(StringConstant.buy),
+                        ),
                       ),
                     ),
                 ],

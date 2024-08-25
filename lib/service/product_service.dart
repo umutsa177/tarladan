@@ -55,6 +55,7 @@ class ProductService {
       await _firestore.collection('products').doc(productId).delete();
     } catch (e) {
       print(e.toString());
+      rethrow;
     }
   }
 

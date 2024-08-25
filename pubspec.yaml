@@ -11,6 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_staggered_animations: ^1.1.1
+
   # Core
   equatable:
   flutter_riverpod:
