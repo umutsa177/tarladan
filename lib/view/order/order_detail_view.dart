@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/fontweight_constant.dart';
 import '../../model/order.dart';
 import '../../model/product.dart';
+import '../../model/review.dart';
 import '../../service/product_service.dart';
 import '../../service/order_service.dart';
 
@@ -19,6 +21,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   final ProductService productService = ProductService();
   final OrderService orderService = OrderService();
   late CustomerOrder _order;
+  double _rating = 0;
+  final TextEditingController _reviewController = TextEditingController();
 
   @override
   void initState() {
@@ -33,8 +37,45 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         _order.status = StringConstant.completed;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sipariş durumu güncellendi')),
+        const SnackBar(content: Text(StringConstant.orderStatusUpdated)),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hata oluştu: $e')),
+      );
+    }
+  }
+
+  Future<void> _submitReview() async {
+    if (_rating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(StringConstant.pleaseSelectAStar)),
+      );
+      return;
+    }
+
+    try {
+      Review review = Review(
+        id: '',
+        orderId: _order.id,
+        productId: _order.productId,
+        customerId: _order.customerId,
+        rating: _rating,
+        comment: _reviewController.text,
+        createdAt: DateTime.now(),
+      );
+
+      await orderService.addReview(review);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(StringConstant.evaluationSuccesfullySaved)),
+      );
+
+      _reviewController.clear();
+      setState(() {
+        _rating = 0;
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hata oluştu: $e')),
@@ -54,7 +95,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Hata oluştu: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('Ürün bulunamadı'));
+            return const Center(child: Text(StringConstant.productNotFound));
           }
 
           Product product = snapshot.data!;
@@ -78,26 +119,31 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('Sipariş ID: ${_order.id}',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    '${StringConstant.orderID}: ${_order.id}',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 16),
-                  _buildInfoRow('Ürün', product.name),
-                  _buildInfoRow('Miktar', _order.quantity.toString()),
-                  _buildInfoRow('Toplam Fiyat',
+                  _buildInfoRow(StringConstant.product, product.name),
+                  _buildInfoRow(
+                      StringConstant.amountOrder, _order.quantity.toString()),
+                  _buildInfoRow(StringConstant.totalPrice,
                       '₺${_order.totalPrice.toStringAsFixed(2)}'),
-                  _buildInfoRow('Durum', _order.status),
-                  _buildInfoRow('Sipariş Tarihi', _order.createdAt.toString()),
+                  _buildInfoRow(StringConstant.status, _order.status),
+                  _buildInfoRow(
+                      StringConstant.orderDate, _order.createdAt.toString()),
                   const SizedBox(height: 16),
-                  const Text('Teslimat Bilgileri:',
+                  const Text(StringConstant.deliveryInfo,
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  _buildInfoRow('Bölge', product.deliveryArea),
-                  _buildInfoRow('Tahmini Teslimat Süresi',
+                  context.sized.emptySizedHeightBoxLow,
+                  _buildInfoRow(StringConstant.region, product.deliveryArea),
+                  _buildInfoRow(StringConstant.estimatedDeliveryTime,
                       product.deliveryTime.toString()),
                   if (_order.status == StringConstant.pending)
                     Padding(
-                      padding: EdgeInsets.only(top: context.padding.normal.top),
+                      padding: context.padding.onlyTopNormal,
                       child: Center(
                         child: ElevatedButton(
                           onPressed: _updateOrderStatus,
@@ -105,6 +151,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         ),
                       ),
                     ),
+                  if (_order.status == StringConstant.completed)
+                    _buildReviewSection(),
                 ],
               ),
             ),
@@ -114,9 +162,58 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     );
   }
 
+  Widget _buildReviewSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: context.sized.normalValue),
+        Text(
+          StringConstant.evaluateProduct,
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeightConstant.bold.value),
+        ),
+        SizedBox(height: context.sized.lowValue),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            return IconButton(
+              icon: Icon(
+                index < _rating ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+                size: 40,
+              ),
+              onPressed: () {
+                setState(() {
+                  _rating = index + 1;
+                });
+              },
+            );
+          }),
+        ),
+        SizedBox(height: context.sized.normalValue),
+        TextField(
+          controller: _reviewController,
+          textInputAction: TextInputAction.done,
+          decoration: const InputDecoration(
+            hintText: StringConstant.writeYourComment,
+            border: OutlineInputBorder(),
+          ),
+          maxLines: 3,
+        ),
+        SizedBox(height: context.sized.normalValue),
+        Center(
+          child: ElevatedButton(
+            onPressed: _submitReview,
+            child: const Text(StringConstant.send),
+          ),
+        ),
+      ],
+    );
+  }
+
   AppBar _appBar(BuildContext context) {
     return AppBar(
-      title: const Text('Sipariş Detayı'),
+      title: const Text(StringConstant.orderDetail),
       automaticallyImplyLeading: false,
       leading: IconButton(
           onPressed: () => context.route.pop(),
@@ -134,7 +231,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             width: 150,
             child: Text(
               '$label:',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeightConstant.bold.value),
             ),
           ),
           Expanded(

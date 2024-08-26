@@ -97,17 +97,17 @@ class _OrderListViewState extends State<OrderListView>
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('Siparişi Sil'),
+                            title: const Text(StringConstant.deleteOrder),
                             content: const Text(
-                                'Bu siparişi silmek istediğinize emin misiniz?'),
+                                StringConstant.areYouSureDeleteThisOrder),
                             actions: [
                               TextButton(
-                                child: const Text('İptal'),
+                                child: const Text(StringConstant.cancel),
                                 onPressed: () =>
                                     Navigator.of(context).pop(false),
                               ),
                               TextButton(
-                                child: const Text('Sil',
+                                child: const Text(StringConstant.delete,
                                     style: TextStyle(color: Colors.red)),
                                 onPressed: () =>
                                     Navigator.of(context).pop(true),

@@ -8,6 +8,7 @@ import '../../model/order.dart';
 import '../../viewModel/auth_viewmodel.dart';
 import '../../viewModel/order_viewmodel.dart';
 import '../../model/product.dart';
+import '../../model/review.dart';
 import '../../widgets/review_card.dart';
 
 class ProductDetailView extends StatefulWidget {
@@ -60,7 +61,6 @@ class _ProductDetailViewState extends State<ProductDetailView> {
     final orderViewModel = Provider.of<OrderViewModel>(context);
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-    // Kullanıcının rolünü kontrol et
     final isCustomer =
         authViewModel.currentUser?.role == StringConstant.customer;
 
@@ -148,18 +148,26 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                   const Text(StringConstant.comments,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  FutureBuilder(
+                  FutureBuilder<List<Review>>(
                     future: orderViewModel.getReviewsForProduct(product.id),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
                       }
-                      if (snapshot.hasData) {
+                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                         final reviews = snapshot.data!;
                         return Column(
-                          children: reviews
-                              .map((review) => ReviewCard(review: review))
-                              .toList(),
+                          children: reviews.map((review) {
+                            return FutureBuilder<String>(
+                              future: _getSellerName(review.customerId),
+                              builder: (context, nameSnapshot) {
+                                return ReviewCard(
+                                  review: review,
+                                  customerName: nameSnapshot.data,
+                                );
+                              },
+                            );
+                          }).toList(),
                         );
                       } else {
                         return const Center(
@@ -203,19 +211,14 @@ class _ProductDetailViewState extends State<ProductDetailView> {
         );
         await orderViewModel.createOrder(order);
         ScaffoldMessenger.of(context).showSnackBar(
-          snackBarAnimationStyle: AnimationStyle(
-            duration: const Duration(seconds: 1),
-            curve: Curves.bounceInOut,
-          ),
           SnackBar(
             backgroundColor: ColorConstant.greenAccent,
             content: Text(
               '${product.name} başarıyla satın alındı',
-              style: const TextStyle(color: ColorConstant.white),
             ),
           ),
         );
-        context.route.navigation.pop(); // Önceki ekrana dön
+        context.route.pop();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: ColorConstant.green,

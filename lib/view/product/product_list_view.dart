@@ -18,8 +18,6 @@ class ProductListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    // final productViewModel =
-    //     Provider.of<ProductViewModel>(context, listen: false);
 
     final isSeller = authViewModel.currentUser?.role == StringConstant.seller;
 

@@ -66,6 +66,32 @@ class StringConstant {
   static const productDeleteError = 'Ürün silinirken bir hata oluştu';
   static const deleteProduct = 'Ürünü Sil';
   static const delete = 'Sil';
+  static const deleteOrder = 'Siparişi Sil';
+  static const areYouSureDeleteThisOrder =
+      'Bu siparişi silmek istediğinize emin misiniz?';
+  static const orderDetail = 'Sipariş Detayı';
+  static const send = 'Gönder';
+  static const orderID = 'Sipariş ID';
+  static const product = 'Ürün';
+  static const amountOrder = 'Miktar';
+  static const totalPrice = 'Toplam Fiyat';
+  static const orderDate = 'Sipariş Tarihi';
+  static const deliveryInfo = 'Teslimat Bilgileri';
+  static const region = 'Bölge';
+  static const estimatedDeliveryTime = 'Tahmini Teslimat Süresi';
+  static const evaluateProduct = 'Ürünü Değerlendirin';
+  static const writeYourComment = 'Yorumunuzu buraya yazın...';
+  static const pleaseSelectAStar = 'Lütfen bir yıldız değeri seçin';
+  static const productNotFound = 'Ürün bulunamadı';
+  static const evaluationSuccesfullySaved =
+      'Değerlendirme başarıyla kaydedildi';
+  static const orderStatusUpdated = 'Sipariş durumu güncellendi';
+  static const customerID = 'Müsteri ID:';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
   // static const appTitle = 'Tarladan';
   // static const appTitle = 'Tarladan';
   // static const appTitle = 'Tarladan';
