@@ -1,5 +1,5 @@
 name: tarladan
-description: "A agriculture and sale app"
+description: "An agriculture and sale app"
 publish_to: "none"
 
 version: 1.0.0+1
@@ -14,10 +14,7 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
 
   # Core
-  equatable:
-  flutter_riverpod:
   kartal:
-  shared_preferences:
 
   # Firebase
   firebase_core:

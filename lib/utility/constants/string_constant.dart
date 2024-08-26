@@ -50,20 +50,33 @@ class StringConstant {
   static const areYouSureToExit = 'Çıkış yapmak istediğinize emin misiniz?';
   static const changePassword = 'Şifre Değiştir';
   static const save = 'Kaydet';
-  static const String currentPassword = 'Mevcut Şifre';
-  static const String newPassword = 'Yeni Şifre';
-  static const String confirmNewPassword = 'Yeni Şifre (Tekrar)';
-  static const String pleaseEnterName = 'Lütfen adınızı girin';
-  static const String pleaseEnterCurrentPassword =
-      'Lütfen mevcut şifrenizi girin';
-  static const String pleaseEnterNewPassword = 'Lütfen yeni şifrenizi girin';
-  static const String passwordMustBeAtLeast6Characters =
+  static const currentPassword = 'Mevcut Şifre';
+  static const newPassword = 'Yeni Şifre';
+  static const confirmNewPassword = 'Yeni Şifre (Tekrar)';
+  static const pleaseEnterName = 'Lütfen adınızı girin';
+  static const pleaseEnterCurrentPassword = 'Lütfen mevcut şifrenizi girin';
+  static const pleaseEnterNewPassword = 'Lütfen yeni şifrenizi girin';
+  static const passwordMustBeAtLeast6Characters =
       'Şifre en az 6 karakter olmalıdır';
-  static const String passwordsDoNotMatch = 'Şifreler eşleşmiyor';
-  static const String edit = 'Düzenle';
-  static const String profileUpdatedSuccessfully =
-      'Profil başarıyla güncellendi';
+  static const passwordsDoNotMatch = 'Şifreler eşleşmiyor';
+  static const edit = 'Düzenle';
+  static const profileUpdatedSuccessfully = 'Profil başarıyla güncellendi';
   static const phoneNumber = 'Telefon Numarası';
   static const phone = 'Telefon';
+  static const productDeleteError = 'Ürün silinirken bir hata oluştu';
+  static const deleteProduct = 'Ürünü Sil';
+  static const delete = 'Sil';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
+  // static const appTitle = 'Tarladan';
   // static const appTitle = 'Tarladan';
 }

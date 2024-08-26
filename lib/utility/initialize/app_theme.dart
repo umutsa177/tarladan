@@ -37,7 +37,10 @@ class AppTheme {
             ),
           ),
         ),
-        snackBarTheme: const SnackBarThemeData(elevation: 12),
+        snackBarTheme: const SnackBarThemeData(
+          elevation: 12,
+          contentTextStyle: TextStyle(color: ColorConstant.white),
+        ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 12,
           type: BottomNavigationBarType.shifting,

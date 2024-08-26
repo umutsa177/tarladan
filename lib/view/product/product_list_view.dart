@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/service/auth_service.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
+import 'package:tarladan/viewModel/auth_viewmodel.dart';
 import 'package:tarladan/widgets/product_card.dart';
 import '../../model/product.dart';
 import '../../viewModel/product_viewmodel.dart';
@@ -15,6 +17,11 @@ class ProductListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    // final productViewModel =
+    //     Provider.of<ProductViewModel>(context, listen: false);
+
+    final isSeller = authViewModel.currentUser?.role == StringConstant.seller;
 
     return Scaffold(
       appBar: _appBar(context),
@@ -27,30 +34,68 @@ class ProductListView extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(
-                    child: Text(
-                        '${StringConstant.anErrorOccurred}: ${snapshot.error}'));
+                  child: Text(
+                      '${StringConstant.anErrorOccurred}: ${snapshot.error}'),
+                );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text(StringConstant.noProductYet));
               } else {
-                return GridView.builder(
-                  padding: context.padding.low / 0.75,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                return AnimationLimiter(
+                  child: GridView.builder(
+                    padding: context.padding.low / 0.75,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final product = snapshot.data![index];
+                      return InkWell(
+                        onTap: () => context.route.navigateName(
+                          '/product_detail',
+                          data: product,
+                        ),
+                        onLongPress: isSeller
+                            ? () async {
+                                final bool? confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return _deleteProductDialog(
+                                        product, context);
+                                  },
+                                );
+                                if (confirm == true) {
+                                  try {
+                                    await productViewModel
+                                        .deleteProduct(product.id);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: ColorConstant.red,
+                                        content: Text(
+                                          '${product.name} silindi',
+                                        ),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: ColorConstant.red,
+                                        content: Text(
+                                          '${StringConstant.productDeleteError}: $e',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            : null,
+                        child: ProductCard(product: product, index: index),
+                      );
+                    },
                   ),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final product = snapshot.data![index];
-                    return InkWell(
-                      onTap: () => context.route.navigateName(
-                        '/product_detail',
-                        data: product,
-                      ),
-                      child: ProductCard(product: product),
-                    );
-                  },
                 );
               }
             },
@@ -58,6 +103,24 @@ class ProductListView extends StatelessWidget {
         },
       ),
       floatingActionButton: _fabButton(authService),
+    );
+  }
+
+  AlertDialog _deleteProductDialog(Product product, BuildContext context) {
+    return AlertDialog(
+      title: const Text(StringConstant.deleteProduct),
+      content:
+          Text('${product.name} ürününü silmek istediğinizden emin misiniz?'),
+      actions: [
+        TextButton(
+          child: const Text(StringConstant.cancel),
+          onPressed: () => context.route.pop(false),
+        ),
+        TextButton(
+          child: const Text(StringConstant.delete),
+          onPressed: () => context.route.pop(true),
+        ),
+      ],
     );
   }
 
