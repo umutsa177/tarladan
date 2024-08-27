@@ -58,7 +58,11 @@ class OrderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Review>> getReviewsForProduct(String productId) async {
-    return await _orderService.getReviewsForProduct(productId);
+  Stream<List<Review>> getReviewsForProduct(String productId) {
+    return _orderService.getReviewsForProduct(productId);
+  }
+
+  Future<void> deleteReview(String reviewId) async {
+    return await _orderService.deleteReview(reviewId);
   }
 }

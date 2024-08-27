@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
               ProductViewModel(authViewModel, productService),
         ),
         ChangeNotifierProvider(create: (_) => OrderViewModel()),
-        // ChangeNotifierProvider(create: (_) => ReviewViewModel()),
         StreamProvider<AppUser?>.value(
           value: AuthService().user,
           initialData: null,

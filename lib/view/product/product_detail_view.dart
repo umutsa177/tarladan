@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/fontweight_constant.dart';
 import '../../model/order.dart';
 import '../../viewModel/auth_viewmodel.dart';
 import '../../viewModel/order_viewmodel.dart';
@@ -52,6 +55,46 @@ class _ProductDetailViewState extends State<ProductDetailView> {
     } catch (e) {
       print('${StringConstant.sellerNameError}: $e');
       return StringConstant.noSellerInfo;
+    }
+  }
+
+  Future<String> _getCustomerName(String customerId) async {
+    try {
+      DocumentSnapshot sellerDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(customerId)
+          .get();
+
+      if (sellerDoc.exists) {
+        Map<String, dynamic> sellerData =
+            sellerDoc.data() as Map<String, dynamic>;
+        return sellerData['name'] ?? StringConstant.noNameCustomer;
+      } else {
+        return StringConstant.unknownCustomer;
+      }
+    } catch (e) {
+      print('${StringConstant.customerNameError}: $e');
+      return StringConstant.noCustomerInfo;
+    }
+  }
+
+  Future<double> _getAverageRating(String productId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('productId', isEqualTo: productId)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) return 0.0;
+
+      double totalRating = 0.0;
+      for (var doc in querySnapshot.docs) {
+        totalRating += (doc['rating'] ?? 0.0).toDouble();
+      }
+      return totalRating / querySnapshot.docs.length;
+    } catch (e) {
+      print('${StringConstant.ratingError}: $e');
+      return 0.0;
     }
   }
 
@@ -120,9 +163,40 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                           );
                         },
                       ),
-                      const Icon(
-                        Icons.star_outlined,
-                        color: ColorConstant.coral,
+                      FutureBuilder<double>(
+                        future: _getAverageRating(product.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+                          final rating = snapshot.data ?? 0.0;
+                          return Container(
+                            height: context.sized.highValue / 2.25,
+                            width: context.sized.highValue / 1.35,
+                            decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: ColorConstant.greyShade300),
+                              borderRadius: context.border.highBorderRadius,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_outlined,
+                                  color: ColorConstant.coral,
+                                ),
+                                Text(
+                                  rating.toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontWeight: FontWeightConstant.medium.value,
+                                    fontSize: 16,
+                                    color: ColorConstant.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -130,10 +204,20 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                   Text(product.description),
                   context.sized.emptySizedHeightBoxLow,
                   Text(
-                      '${StringConstant.deliveryArea}: ${product.deliveryArea}'),
+                    '${StringConstant.deliveryArea}: ${product.deliveryArea}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                   context.sized.emptySizedHeightBoxLow,
                   Text(
-                      '${StringConstant.noDateDeliveryTime}: ${product.deliveryTime} gün'),
+                    '${StringConstant.noDateDeliveryTime}: ${product.deliveryTime} gün',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                   context.sized.emptySizedHeightBoxLow,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,39 +232,122 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                   const Text(StringConstant.comments,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  FutureBuilder<List<Review>>(
-                    future: orderViewModel.getReviewsForProduct(product.id),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
-                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                        final reviews = snapshot.data!;
-                        return Column(
-                          children: reviews.map((review) {
-                            return FutureBuilder<String>(
-                              future: _getSellerName(review.customerId),
-                              builder: (context, nameSnapshot) {
-                                return ReviewCard(
-                                  review: review,
-                                  customerName: nameSnapshot.data,
-                                );
-                              },
-                            );
-                          }).toList(),
-                        );
-                      } else {
-                        return const Center(
-                            child: Text(StringConstant.noCommentsYet));
-                      }
-                    },
-                  ),
+                  _buildReviewsList(product, orderViewModel),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildReviewsList(Product product, OrderViewModel orderViewModel) {
+    return StreamBuilder<List<Review>>(
+      stream: orderViewModel.getReviewsForProduct(product.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          final reviews = snapshot.data!;
+          return AnimationLimiter(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                final review = reviews[index];
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 375),
+                  child: SlideAnimation(
+                    verticalOffset: 50.0,
+                    child: FadeInAnimation(
+                      child: Slidable(
+                        key: ValueKey(review.id),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          dismissible: DismissiblePane(
+                            onDismissed: () {
+                              _deleteReview(review, orderViewModel);
+                            },
+                          ),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                _deleteReview(review, orderViewModel);
+                              },
+                              backgroundColor: ColorConstant.red,
+                              foregroundColor: ColorConstant.white,
+                              icon: Icons.delete,
+                              label: StringConstant.delete,
+                            ),
+                          ],
+                        ),
+                        child: FutureBuilder<String>(
+                          future: _getCustomerName(review.customerId),
+                          builder: (context, nameSnapshot) {
+                            return ReviewCard(
+                              review: review,
+                              customerName: nameSnapshot.data,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        } else {
+          return const Center(child: Text(StringConstant.noCommentsYet));
+        }
+      },
+    );
+  }
+
+  void _deleteReview(Review review, OrderViewModel orderViewModel) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(StringConstant.deleteReviewTitle),
+          content: const Text(StringConstant.deleteReviewConfirmation),
+          actions: [
+            TextButton(
+              child: const Text(StringConstant.cancel),
+              onPressed: () => context.route.pop(),
+            ),
+            TextButton(
+              child: const Text(StringConstant.delete),
+              onPressed: () async {
+                context.route.pop();
+                try {
+                  await orderViewModel.deleteReview(review.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(StringConstant.reviewDeleted),
+                      backgroundColor: ColorConstant.green,
+                    ),
+                  );
+                  setState(() {});
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text('${StringConstant.errorDeletingReview}: $e'),
+                      backgroundColor: ColorConstant.red,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

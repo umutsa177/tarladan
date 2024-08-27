@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tarladan/utility/constants/string_constant.dart';
 import '../model/order.dart';
 import '../model/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<CustomerOrder>> getOrders(String userId) async {
@@ -58,19 +61,41 @@ class OrderService {
     }
   }
 
-  Future<List<Review>> getReviewsForProduct(String productId) async {
+  Stream<List<Review>> getReviewsForProduct(String productId) {
+    return FirebaseFirestore.instance
+        .collection('reviews')
+        .where('productId', isEqualTo: productId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Review.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  Future<void> deleteReview(String reviewId) async {
     try {
-      QuerySnapshot snapshot = await _firestore
-          .collection('reviews')
-          .where('productId', isEqualTo: productId)
-          .get();
-      return snapshot.docs
-          .map((doc) =>
-              Review.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception(StringConstant.userNotLoggedIn);
+      }
+
+      final reviewDoc =
+          await _firestore.collection('reviews').doc(reviewId).get();
+
+      if (!reviewDoc.exists) {
+        throw Exception(StringConstant.noCommentsFound);
+      }
+
+      final reviewData = reviewDoc.data() as Map<String, dynamic>;
+      final reviewOwnerId = reviewData['customerId'] as String;
+
+      if (currentUser.uid != reviewOwnerId) {
+        throw Exception(StringConstant.notAuthorizedDeleteThisComment);
+      }
+
+      await _firestore.collection('reviews').doc(reviewId).delete();
     } catch (e) {
-      print(e.toString());
-      return [];
+      print('Error deleting review: $e');
+      rethrow;
     }
   }
 }
