@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/enums/fontweight_constant.dart';
 import '../../model/order.dart';
@@ -204,6 +205,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         Center(
           child: ElevatedButton(
             onPressed: _submitReview,
+            style: const ButtonStyle(
+              backgroundColor:
+                  WidgetStatePropertyAll<Color>(ColorConstant.green),
+            ),
             child: const Text(StringConstant.send),
           ),
         ),

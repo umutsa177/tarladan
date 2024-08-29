@@ -40,6 +40,7 @@ class AppTheme {
         snackBarTheme: const SnackBarThemeData(
           elevation: 12,
           contentTextStyle: TextStyle(color: ColorConstant.white),
+          backgroundColor: ColorConstant.green,
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 12,

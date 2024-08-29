@@ -258,52 +258,67 @@ class _ProductDetailViewState extends State<ProductDetailView> {
               itemCount: reviews.length,
               itemBuilder: (context, index) {
                 final review = reviews[index];
+                final currentUserId =
+                    Provider.of<AuthViewModel>(context, listen: false)
+                        .currentUser
+                        ?.id;
+                final isReviewOwner = currentUserId == review.customerId;
+
                 return AnimationConfiguration.staggeredList(
                   position: index,
                   duration: const Duration(milliseconds: 375),
                   child: SlideAnimation(
                     verticalOffset: 50.0,
                     child: FadeInAnimation(
-                      child: Slidable(
-                        key: ValueKey(review.id),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          dismissible: DismissiblePane(
-                            onDismissed: () {
-                              _deleteReview(review, orderViewModel);
-                            },
-                          ),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                _deleteReview(review, orderViewModel);
+                      child: isReviewOwner
+                          ? Slidable(
+                              key: ValueKey(review.id),
+                              endActionPane: ActionPane(
+                                motion: const ScrollMotion(),
+                                dismissible: DismissiblePane(
+                                  onDismissed: () {
+                                    _deleteReview(review, orderViewModel);
+                                  },
+                                ),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      _deleteReview(review, orderViewModel);
+                                    },
+                                    backgroundColor: ColorConstant.red,
+                                    foregroundColor: ColorConstant.white,
+                                    icon: Icons.delete,
+                                    label: StringConstant.delete,
+                                  ),
+                                ],
+                              ),
+                              child: FutureBuilder<String>(
+                                future: _getCustomerName(review.customerId),
+                                builder: (context, nameSnapshot) {
+                                  return ReviewCard(
+                                    review: review,
+                                    customerName: nameSnapshot.data,
+                                  );
+                                },
+                              ),
+                            )
+                          : FutureBuilder<String>(
+                              future: _getCustomerName(review.customerId),
+                              builder: (context, nameSnapshot) {
+                                return ReviewCard(
+                                  review: review,
+                                  customerName: nameSnapshot.data,
+                                );
                               },
-                              backgroundColor: ColorConstant.red,
-                              foregroundColor: ColorConstant.white,
-                              icon: Icons.delete,
-                              label: StringConstant.delete,
                             ),
-                          ],
-                        ),
-                        child: FutureBuilder<String>(
-                          future: _getCustomerName(review.customerId),
-                          builder: (context, nameSnapshot) {
-                            return ReviewCard(
-                              review: review,
-                              customerName: nameSnapshot.data,
-                            );
-                          },
-                        ),
-                      ),
                     ),
                   ),
                 );
               },
             ),
           );
-        } else {
-          return const Center(child: Text(StringConstant.noCommentsYet));
         }
+        return const Center(child: Text(StringConstant.noCommentsYet));
       },
     );
   }

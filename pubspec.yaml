@@ -5,7 +5,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.4.4 <4.0.0"
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -14,9 +14,13 @@ dependencies:
   # Animation
   flutter_staggered_animations: ^1.1.1
   flutter_slidable: ^3.1.1
+  lottie: ^3.1.2
 
   # Core
   kartal:
+
+  # Macros
+  json: ^0.20.2
 
   # Firebase
   firebase_core:
@@ -42,7 +46,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
+    - assets/lotties/
     - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see

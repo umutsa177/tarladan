@@ -47,7 +47,8 @@ class StringConstant {
   static const role = 'Rol';
   static const cancel = 'İptal';
   static const exit = 'Çıkış Yap';
-  static const areYouSureToExit = 'Çıkış yapmak istediğinize emin misiniz?';
+  static const areYouSureToExit =
+      'Hesaptan çıkış yapmak istediğinize emin misiniz?';
   static const changePassword = 'Şifre Değiştir';
   static const save = 'Kaydet';
   static const currentPassword = 'Mevcut Şifre';

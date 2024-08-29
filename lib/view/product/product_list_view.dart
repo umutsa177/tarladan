@@ -127,7 +127,7 @@ class ProductListView extends StatelessWidget {
       future: authService.isUserSeller,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox.shrink(); // Yükleme sırasında butonu gizle
+          return const SizedBox.shrink();
         }
         if (snapshot.hasData && snapshot.data == true) {
           return FloatingActionButton(
@@ -135,7 +135,7 @@ class ProductListView extends StatelessWidget {
             onPressed: () => context.route.navigateName('/add_product'),
           );
         } else {
-          return const SizedBox.shrink(); // Satıcı değilse butonu gösterme
+          return const SizedBox.shrink();
         }
       },
     );
@@ -162,7 +162,7 @@ class ProductListView extends StatelessWidget {
           child: InkWell(
               child: CircleAvatar(
                 backgroundColor: ColorConstant.greyShade300,
-                child: IconConstant.appIcon.toImage,
+                child: IconConstant.userIcon.toImage,
               ),
               onTap: () => context.route.navigateName('/profile')),
         ),

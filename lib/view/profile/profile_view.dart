@@ -15,6 +15,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   final AuthService _authService = AuthService();
   AppUser? _user;
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
@@ -112,7 +113,7 @@ class _ProfileViewState extends State<ProfileView> {
               _user?.phoneNumber ?? StringConstant.unknown),
           _buildInfoTile(Icons.badge, StringConstant.role,
               _user?.role ?? StringConstant.unknown),
-          _buildInfoTile(Icons.lock, StringConstant.password, '********'),
+          _buildPasswordTile(),
         ],
       ),
     );
@@ -127,6 +128,29 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  Widget _buildPasswordTile() {
+    return ListTile(
+      leading: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          _isPasswordVisible ? Icons.lock_open : Icons.lock,
+          color: ColorConstant.grey,
+        ),
+        onPressed: () {
+          setState(() {
+            _isPasswordVisible = !_isPasswordVisible;
+          });
+        },
+      ),
+      title: const Text(StringConstant.password,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      subtitle: Text(
+        _isPasswordVisible ? (_user?.password ?? '******') : '******',
+        style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
   Widget _buildProfileActions() {
     return Padding(
       padding: context.padding.normal,
@@ -136,9 +160,8 @@ class _ProfileViewState extends State<ProfileView> {
             icon: const Icon(Icons.edit),
             label: const Text(StringConstant.editProfile),
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: ColorConstant.grey,
-              minimumSize: const Size(double.infinity, 50),
+              backgroundColor: ColorConstant.black,
+              minimumSize: Size(context.sized.width, context.sized.width / 7),
             ),
             onPressed: () {
               // Profil düzenleme sayfasına yönlendirme
@@ -146,19 +169,6 @@ class _ProfileViewState extends State<ProfileView> {
             },
           ),
           SizedBox(height: context.sized.normalValue),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.lock),
-            label: const Text(StringConstant.changePassword),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: ColorConstant.grey,
-              side: const BorderSide(color: ColorConstant.black),
-              minimumSize: const Size(double.infinity, 50),
-            ),
-            onPressed: () {
-              // Şifre değiştirme sayfasına yönlendirme
-              // Navigator.of(context).pushNamed('/change-password');
-            },
-          ),
         ],
       ),
     );

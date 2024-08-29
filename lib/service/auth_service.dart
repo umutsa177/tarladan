@@ -22,25 +22,24 @@ class AuthService {
     return false;
   }
 
-  Future<User?> register(String name, String email, String password,
+  Future<UserCredential?> register(String name, String email, String password,
       String role, String phoneNumber) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      User? firebaseUser = result.user;
 
-      if (firebaseUser != null) {
-        await _firestore.collection('users').doc(firebaseUser.uid).set({
-          'name': name,
-          'email': email,
-          'role': role,
-          'phoneNumber': phoneNumber,
-        });
-      }
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'name': name,
+        'email': email,
+        'role': role,
+        'phoneNumber': phoneNumber,
+        'password': password,
+      });
 
-      return firebaseUser;
+      return userCredential;
     } catch (e) {
       print(e.toString());
       return null;
