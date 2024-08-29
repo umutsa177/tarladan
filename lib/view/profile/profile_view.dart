@@ -163,10 +163,7 @@ class _ProfileViewState extends State<ProfileView> {
               backgroundColor: ColorConstant.black,
               minimumSize: Size(context.sized.width, context.sized.width / 7),
             ),
-            onPressed: () {
-              // Profil düzenleme sayfasına yönlendirme
-              // Navigator.of(context).pushNamed('/edit-profile');
-            },
+            onPressed: () => context.route.navigateName('/edit-profile'),
           ),
           SizedBox(height: context.sized.normalValue),
         ],

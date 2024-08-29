@@ -101,10 +101,5 @@ class StringConstant {
   static const deleteReviewTitle = 'Yorumu Sil';
   static const deleteReviewConfirmation =
       'Bu yorumu silmek istediğinizden emin misiniz?';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
-  // static const appTitle = 'Tarladan';
+  static const saveChanges = "Değişiklikleri Kaydet";
 }

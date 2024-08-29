@@ -64,4 +64,14 @@ class AuthViewModel extends ChangeNotifier {
     _currentUser = null;
     notifyListeners();
   }
+
+  Future<void> refreshUser() async {
+    if (_currentUser != null) {
+      final updatedUser = await _authService.getAppUser(_currentUser!.id);
+      if (updatedUser != null) {
+        _currentUser = updatedUser;
+        notifyListeners();
+      }
+    }
+  }
 }

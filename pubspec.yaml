@@ -19,9 +19,6 @@ dependencies:
   # Core
   kartal:
 
-  # Macros
-  json: ^0.20.2
-
   # Firebase
   firebase_core:
   firebase_auth:

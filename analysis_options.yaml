@@ -1,6 +1,3 @@
-analyzer:
-  enable-experiment:
-    - macros
 include: package:flutter_lints/flutter.yaml
 
 linter:
