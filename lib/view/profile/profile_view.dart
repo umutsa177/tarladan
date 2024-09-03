@@ -51,13 +51,17 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: _user == null
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildProfileHeader(),
-                  _buildProfileInfo(),
-                  _buildProfileActions(),
-                ],
+          : RefreshIndicator(
+              onRefresh: _loadUserData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildProfileHeader(),
+                    _buildProfileInfo(),
+                    _buildProfileActions(),
+                  ],
+                ),
               ),
             ),
     );
@@ -130,10 +134,19 @@ class _ProfileViewState extends State<ProfileView> {
 
   Widget _buildPasswordTile() {
     return ListTile(
-      leading: IconButton(
-        padding: EdgeInsets.zero,
+      leading: Icon(
+        _isPasswordVisible ? Icons.lock_open : Icons.lock,
+        color: ColorConstant.grey,
+      ),
+      title: const Text(StringConstant.password,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      subtitle: Text(
+        _isPasswordVisible ? (_user?.password ?? '******') : '******',
+        style: const TextStyle(fontSize: 16),
+      ),
+      trailing: IconButton(
         icon: Icon(
-          _isPasswordVisible ? Icons.lock_open : Icons.lock,
+          _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
           color: ColorConstant.grey,
         ),
         onPressed: () {
@@ -141,12 +154,6 @@ class _ProfileViewState extends State<ProfileView> {
             _isPasswordVisible = !_isPasswordVisible;
           });
         },
-      ),
-      title: const Text(StringConstant.password,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      subtitle: Text(
-        _isPasswordVisible ? (_user?.password ?? '******') : '******',
-        style: const TextStyle(fontSize: 16),
       ),
     );
   }
@@ -163,12 +170,19 @@ class _ProfileViewState extends State<ProfileView> {
               backgroundColor: ColorConstant.black,
               minimumSize: Size(context.sized.width, context.sized.width / 7),
             ),
-            onPressed: () => context.route.navigateName('/edit-profile'),
+            onPressed: () => _navigateToEditProfile(context),
           ),
           SizedBox(height: context.sized.normalValue),
         ],
       ),
     );
+  }
+
+  Future<void> _navigateToEditProfile(BuildContext context) async {
+    final result = await context.route.navigateName('/edit_profile');
+    if (result == true) {
+      await _loadUserData();
+    }
   }
 
   void _showLogoutDialog(BuildContext context) {

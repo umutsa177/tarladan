@@ -4,6 +4,7 @@ import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/icon_constant.dart';
 import 'dart:io';
 import '../../viewModel/product_viewmodel.dart';
 import '../../model/product.dart';
@@ -93,9 +94,16 @@ class _AddProductViewState extends State<AddProductView> {
   ElevatedButton _addProductButton(BuildContext context) {
     return ElevatedButton(
       child: const Text(StringConstant.addProduct),
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate() && _image != null) {
           _formKey.currentState!.save();
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return Center(child: IconConstant.loadingBar.toLottie);
+            },
+          );
           final product = Product(
             id: '',
             name: _name,
@@ -107,9 +115,14 @@ class _AddProductViewState extends State<AddProductView> {
             deliveryArea: _deliveryArea,
             sellerId: FirebaseAuth.instance.currentUser?.uid ?? '',
           );
-          Provider.of<ProductViewModel>(context, listen: false)
-              .addProduct(product, _image!);
-          Navigator.pop(context);
+          try {
+            await Provider.of<ProductViewModel>(context, listen: false)
+                .addProduct(product, _image!);
+            context.route.pop();
+            context.route.navigateName('/product_list_view');
+          } catch (e) {
+            context.route.pop();
+          }
         }
       },
     );

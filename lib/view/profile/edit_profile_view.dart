@@ -92,6 +92,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget _buildNameField() {
     return TextFormField(
       controller: _nameController,
+      keyboardType: TextInputType.name,
+      textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: StringConstant.nameSurname,
         border: OutlineInputBorder(),
@@ -108,6 +110,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget _buildCurrentPasswordField() {
     return TextFormField(
       controller: _currentPasswordController,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: 'Mevcut Şifre',
         border: OutlineInputBorder(),
@@ -125,6 +129,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget _buildNewPasswordField() {
     return TextFormField(
       controller: _newPasswordController,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: 'Yeni Şifre',
         border: OutlineInputBorder(),
@@ -142,6 +148,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget _buildConfirmPasswordField() {
     return TextFormField(
       controller: _confirmPasswordController,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
         labelText: 'Yeni Şifre (Tekrar)',
         border: OutlineInputBorder(),
@@ -170,7 +178,6 @@ class _EditProfileViewState extends State<EditProfileView> {
 
           if (_newPasswordController.text.isNotEmpty) {
             await _authService.changePassword(
-              user.id,
               _currentPasswordController.text,
               _newPasswordController.text,
             );
@@ -181,7 +188,7 @@ class _EditProfileViewState extends State<EditProfileView> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Profil başarıyla güncellendi')),
           );
-          context.route.pop();
+          context.route.pop(true);
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

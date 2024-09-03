@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/enums/fontweight_constant.dart';
+import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../model/order.dart';
 import '../../viewModel/auth_viewmodel.dart';
 import '../../viewModel/order_viewmodel.dart';
@@ -247,7 +248,12 @@ class _ProductDetailViewState extends State<ProductDetailView> {
       stream: orderViewModel.getReviewsForProduct(product.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: SizedBox(
+                height: context.sized.width / 2.25,
+                width: context.sized.width / 2.25,
+                child: IconConstant.loadingBar.toLottie),
+          );
         }
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           final reviews = snapshot.data!;

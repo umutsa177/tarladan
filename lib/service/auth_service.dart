@@ -107,31 +107,47 @@ class AuthService {
   }
 
   Future<void> changePassword(
-      String userId, String currentPassword, String newPassword) async {
+      String currentPassword, String newPassword) async {
     try {
+      // Mevcut kullanıcıyı al
       User? user = _auth.currentUser;
-      if (user != null) {
+
+      if (user != null && user.email != null) {
+        // Kullanıcının kimlik bilgilerini yeniden doğrula
         AuthCredential credential = EmailAuthProvider.credential(
           email: user.email!,
           password: currentPassword,
         );
-        await user.reauthenticateWithCredential(credential);
+
+        try {
+          await user.reauthenticateWithCredential(credential);
+        } catch (e) {
+          throw Exception('Mevcut şifre yanlış. Lütfen doğru şifreyi giriniz.');
+        }
+
+        // Şifreyi güncelle
         await user.updatePassword(newPassword);
+
+        // Firestore'daki kullanıcı belgesini güncelle
+        await _firestore.collection('users').doc(user.uid).update({
+          'password': newPassword,
+        });
       } else {
-        throw Exception('Kullanıcı oturumu bulunamadı');
+        throw Exception('Kullanıcı bulunamadı veya e-posta adresi yok');
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'weak-password':
+          throw Exception(
+              'Yeni şifre çok zayıf. Lütfen daha güçlü bir şifre seçin.');
+        case 'requires-recent-login':
+          throw Exception(
+              'Bu işlem için yakın zamanda oturum açmanız gerekiyor. Lütfen çıkış yapıp tekrar giriş yapın.');
+        default:
+          throw Exception('Şifre değiştirme başarısız oldu: ${e.message}');
       }
     } catch (e) {
-      print('Şifre değiştirme hatası: $e');
-      if (e is FirebaseAuthException) {
-        if (e.code == 'wrong-password') {
-          throw Exception('Mevcut şifre yanlış');
-        } else {
-          throw Exception(
-              'Şifre değiştirilirken bir hata oluştu: ${e.message}');
-        }
-      } else {
-        throw Exception('Şifre değiştirilirken bir hata oluştu');
-      }
+      throw Exception('Beklenmeyen bir hata oluştu: $e');
     }
   }
 }

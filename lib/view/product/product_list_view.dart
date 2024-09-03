@@ -29,7 +29,7 @@ class ProductListView extends StatelessWidget {
             future: productViewModel.getProducts(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: IconConstant.loadingBar.toLottie);
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text(

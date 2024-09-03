@@ -35,6 +35,7 @@ class ProductViewModel extends ChangeNotifier {
 
   Future<List<Product>> getProducts() async {
     try {
+      await Future.delayed(const Duration(seconds: 2));
       return await _productService.getProducts();
     } catch (e) {
       print('Error getting products: $e');

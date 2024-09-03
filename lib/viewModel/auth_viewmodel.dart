@@ -51,6 +51,7 @@ class AuthViewModel extends ChangeNotifier {
         setLoading(false);
         return true;
       }
+      setLoading(false);
       return false;
     } catch (e) {
       setLoading(false);

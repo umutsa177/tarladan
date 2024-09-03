@@ -9,6 +9,7 @@ import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/viewModel/order_viewmodel.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+import '../utility/enums/icon_constant.dart';
 import '../viewModel/auth_viewmodel.dart';
 
 class ProductCard extends StatelessWidget {
@@ -80,7 +81,7 @@ class ProductCard extends StatelessWidget {
       fit: BoxFit.cover,
       width: double.infinity,
       placeholder: (context, url) =>
-          const Center(child: CircularProgressIndicator()),
+          Center(child: IconConstant.loadingBar.toLottie),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
   }
