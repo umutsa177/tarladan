@@ -6,6 +6,9 @@ import 'package:tarladan/model/order.dart';
 import 'package:tarladan/model/product.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
+import 'package:tarladan/utility/enums/icon_size.dart';
 import 'package:tarladan/viewModel/order_viewmodel.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -32,8 +35,9 @@ class ProductCard extends StatelessWidget {
 
     return AnimationConfiguration.staggeredGrid(
       position: index,
-      duration: const Duration(milliseconds: 375),
-      columnCount: 2,
+      duration:
+          Duration(milliseconds: DoubleConstant.milliseconds.value.toInt()),
+      columnCount: DoubleConstant.crossAxisCount.value.toInt(),
       child: ScaleAnimation(
         child: FadeInAnimation(
           child: Card(
@@ -92,8 +96,13 @@ class ProductCard extends StatelessWidget {
   }
 
   Text _productAmountText() {
-    return Text("${product.amount} Kg",
-        style: const TextStyle(fontSize: 12, color: ColorConstant.grey));
+    return Text(
+      "${product.amount} Kg",
+      style: TextStyle(
+        fontSize: FontSizeConstant.twelve.value,
+        color: ColorConstant.grey,
+      ),
+    );
   }
 
   Text _productPriceText() {
@@ -112,7 +121,7 @@ class ProductCard extends StatelessWidget {
           productId: product.id,
           status: StringConstant.pending,
           createdAt: DateTime.now(),
-          quantity: 1,
+          quantity: DoubleConstant.one.value.toInt(),
           totalPrice: product.price,
         );
         await orderViewModel.createOrder(order);
@@ -126,10 +135,10 @@ class ProductCard extends StatelessWidget {
           ),
         );
       },
-      icon: const Icon(
+      icon: Icon(
         Icons.add_box_rounded,
         color: ColorConstant.green,
-        size: 42,
+        size: IconSize.lowIconSizePlusTwo.value,
       ),
     );
   }

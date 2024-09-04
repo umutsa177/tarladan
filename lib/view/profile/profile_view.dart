@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
+import 'package:tarladan/utility/enums/fontweight_constant.dart';
+import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../model/user.dart';
 import '../../service/auth_service.dart';
 import '../../utility/constants/string_constant.dart';
@@ -36,21 +40,9 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(StringConstant.profile),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => _showLogoutDialog(context),
-          ),
-        ],
-        leading: IconButton(
-            onPressed: () => context.route.pop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-      ),
+      appBar: _appBar(context),
       body: _user == null
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: IconConstant.loadingBar.toLottie)
           : RefreshIndicator(
               onRefresh: _loadUserData,
               child: SingleChildScrollView(
@@ -67,9 +59,25 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      title: const Text(StringConstant.profile),
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.exit_to_app),
+          onPressed: () => _showLogoutDialog(context),
+        ),
+      ],
+      leading: IconButton(
+          onPressed: () => context.route.pop(),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+    );
+  }
+
   Widget _buildProfileHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 32),
+      padding: context.padding.verticalMedium,
       decoration: BoxDecoration(
         borderRadius: context.border.normalBorderRadius,
         gradient: LinearGradient(
@@ -81,23 +89,36 @@ class _ProfileViewState extends State<ProfileView> {
       child: Column(
         children: [
           CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
+            radius: DoubleConstant.verticalOffset.value,
+            backgroundColor: ColorConstant.white,
             child: Text(
-              _user?.name.substring(0, 1).toUpperCase() ?? '?',
-              style: const TextStyle(fontSize: 40, color: ColorConstant.black),
+              _user?.name
+                      .substring(DoubleConstant.offsetdy.value.toInt(),
+                          DoubleConstant.one.value.toInt())
+                      .toUpperCase() ??
+                  '?',
+              style: TextStyle(
+                fontSize: FontSizeConstant.forty.value,
+                color: ColorConstant.black,
+              ),
             ),
           ),
           const SizedBox(height: 16),
           Text(
             _user?.name ?? StringConstant.unknown,
-            style: const TextStyle(
-                fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: FontSizeConstant.twentyFour.value,
+              color: ColorConstant.white,
+              fontWeight: FontWeightConstant.bold.value,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             _user?.email ?? StringConstant.unknown,
-            style: TextStyle(fontSize: 16, color: ColorConstant.greyBackground),
+            style: TextStyle(
+              fontSize: FontSizeConstant.sixteen.value,
+              color: ColorConstant.greyBackground,
+            ),
           ),
         ],
       ),
@@ -126,9 +147,17 @@ class _ProfileViewState extends State<ProfileView> {
   Widget _buildInfoTile(IconData icon, String title, String value) {
     return ListTile(
       leading: Icon(icon, color: ColorConstant.grey),
-      title: Text(title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-      subtitle: Text(value, style: const TextStyle(fontSize: 16)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: FontSizeConstant.sixteen.value,
+          fontWeight: FontWeightConstant.bold.value,
+        ),
+      ),
+      subtitle: Text(
+        value,
+        style: TextStyle(fontSize: FontSizeConstant.sixteen.value),
+      ),
     );
   }
 
@@ -138,11 +167,16 @@ class _ProfileViewState extends State<ProfileView> {
         _isPasswordVisible ? Icons.lock_open : Icons.lock,
         color: ColorConstant.grey,
       ),
-      title: const Text(StringConstant.password,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      title: Text(
+        StringConstant.password,
+        style: TextStyle(
+          fontSize: FontSizeConstant.sixteen.value,
+          fontWeight: FontWeightConstant.bold.value,
+        ),
+      ),
       subtitle: Text(
         _isPasswordVisible ? (_user?.password ?? '******') : '******',
-        style: const TextStyle(fontSize: 16),
+        style: TextStyle(fontSize: FontSizeConstant.sixteen.value),
       ),
       trailing: IconButton(
         icon: Icon(
@@ -168,7 +202,8 @@ class _ProfileViewState extends State<ProfileView> {
             label: const Text(StringConstant.editProfile),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorConstant.black,
-              minimumSize: Size(context.sized.width, context.sized.width / 7),
+              minimumSize: Size(context.sized.width,
+                  context.sized.width / DoubleConstant.seven.value),
             ),
             onPressed: () => _navigateToEditProfile(context),
           ),

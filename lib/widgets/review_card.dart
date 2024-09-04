@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
+import 'package:tarladan/utility/enums/fontweight_constant.dart';
+import 'package:tarladan/utility/enums/icon_size.dart';
 import '../model/review.dart';
 import '../utility/constants/color_constant.dart';
 import '../utility/constants/string_constant.dart';
@@ -25,19 +29,20 @@ class ReviewCard extends StatelessWidget {
                 Text(
                   customerName ??
                       '${StringConstant.customerID} ${review.customerId}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontWeight: FontWeightConstant.bold.value,
+                    fontSize: FontSizeConstant.sixteen.value,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(5, (index) {
+                  children:
+                      List.generate(DoubleConstant.five.value.toInt(), (index) {
                     return Icon(
                       index < review.rating ? Icons.star : Icons.star_border,
                       color: ColorConstant.amber,
-                      size: 20,
+                      size: IconSize.smallIconSize.value,
                     );
                   }),
                 ),
@@ -46,14 +51,17 @@ class ReviewCard extends StatelessWidget {
             SizedBox(height: context.sized.lowValue),
             Text(
               review.comment,
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: FontSizeConstant.fourteen.value),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             SizedBox(height: context.sized.lowValue / 2),
             Text(
               'Date: ${review.createdAt.toString()}',
-              style: const TextStyle(fontSize: 12, color: ColorConstant.grey),
+              style: TextStyle(
+                fontSize: FontSizeConstant.twelve.value,
+                color: ColorConstant.grey,
+              ),
             ),
           ],
         ),

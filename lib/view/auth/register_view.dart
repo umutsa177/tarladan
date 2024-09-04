@@ -3,6 +3,7 @@ import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../viewModel/auth_viewmodel.dart';
 import '../../widgets/auth_texfield.dart';
@@ -36,35 +37,13 @@ class _RegisterViewState extends State<RegisterView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AuthTextfield(
-                      icon: const Icon(Icons.person),
-                      labelText: StringConstant.nameSurname,
-                      keyboardType: TextInputType.name,
-                      controller: _nameController,
-                    ),
+                    _nameTextField(),
                     context.sized.emptySizedHeightBoxLow,
-                    AuthTextfield(
-                      icon: const Icon(Icons.phone),
-                      controller: _phoneController,
-                      labelText: StringConstant.phoneNumber,
-                      keyboardType: TextInputType.phone,
-                    ),
+                    _phoenTextField(),
                     context.sized.emptySizedHeightBoxLow,
-                    AuthTextfield(
-                      icon: const Icon(Icons.mail_outline_rounded),
-                      controller: _emailController,
-                      labelText: StringConstant.mail,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                    _mailTextField(),
                     context.sized.emptySizedHeightBoxLow,
-                    AuthTextfield(
-                      icon: const Icon(Icons.visibility_off),
-                      controller: _passwordController,
-                      labelText: StringConstant.password,
-                      keyboardType: TextInputType.visiblePassword,
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                    ),
+                    _passwordTextField(),
                     context.sized.emptySizedHeightBoxLow,
                     _selectRoleButton(),
                     context.sized.emptySizedHeightBoxLow,
@@ -76,19 +55,60 @@ class _RegisterViewState extends State<RegisterView> {
               ),
             ),
           ),
-          if (authViewModel.isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: IconConstant.loadingBar.toLottie,
-                ),
-              ),
-            ),
+          if (authViewModel.isLoading) _loadingBar(),
         ],
       ),
+    );
+  }
+
+  Container _loadingBar() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+        child: SizedBox(
+          width: DoubleConstant.animationSize.value,
+          height: DoubleConstant.animationSize.value,
+          child: IconConstant.loadingBar.toLottie,
+        ),
+      ),
+    );
+  }
+
+  AuthTextfield _passwordTextField() {
+    return AuthTextfield(
+      icon: const Icon(Icons.visibility_off),
+      controller: _passwordController,
+      labelText: StringConstant.password,
+      keyboardType: TextInputType.visiblePassword,
+      obscureText: true,
+      textInputAction: TextInputAction.done,
+    );
+  }
+
+  AuthTextfield _mailTextField() {
+    return AuthTextfield(
+      icon: const Icon(Icons.mail_outline_rounded),
+      controller: _emailController,
+      labelText: StringConstant.mail,
+      keyboardType: TextInputType.emailAddress,
+    );
+  }
+
+  AuthTextfield _phoenTextField() {
+    return AuthTextfield(
+      icon: const Icon(Icons.phone),
+      controller: _phoneController,
+      labelText: StringConstant.phoneNumber,
+      keyboardType: TextInputType.phone,
+    );
+  }
+
+  AuthTextfield _nameTextField() {
+    return AuthTextfield(
+      icon: const Icon(Icons.person),
+      labelText: StringConstant.nameSurname,
+      keyboardType: TextInputType.name,
+      controller: _nameController,
     );
   }
 

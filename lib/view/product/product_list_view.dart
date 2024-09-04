@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:tarladan/service/auth_service.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
 import 'package:tarladan/viewModel/auth_viewmodel.dart';
 import 'package:tarladan/widgets/product_card.dart';
@@ -29,7 +30,12 @@ class ProductListView extends StatelessWidget {
             future: productViewModel.getProducts(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: IconConstant.loadingBar.toLottie);
+                return Center(
+                  child: SizedBox(
+                      height: context.sized.width / 1.5,
+                      width: context.sized.width / 1.5,
+                      child: IconConstant.shopping.toLottie),
+                );
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text(
@@ -38,69 +44,75 @@ class ProductListView extends StatelessWidget {
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text(StringConstant.noProductYet));
               } else {
-                return AnimationLimiter(
-                  child: GridView.builder(
-                    padding: context.padding.low / 0.75,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final product = snapshot.data![index];
-                      return InkWell(
-                        onTap: () => context.route.navigateName(
-                          '/product_detail',
-                          data: product,
-                        ),
-                        onLongPress: isSeller
-                            ? () async {
-                                final bool? confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return _deleteProductDialog(
-                                        product, context);
-                                  },
-                                );
-                                if (confirm == true) {
-                                  try {
-                                    await productViewModel
-                                        .deleteProduct(product.id);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: ColorConstant.red,
-                                        content: Text(
-                                          '${product.name} silindi',
-                                        ),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: ColorConstant.red,
-                                        content: Text(
-                                          '${StringConstant.productDeleteError}: $e',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
-                            : null,
-                        child: ProductCard(product: product, index: index),
-                      );
-                    },
-                  ),
-                );
+                return _productGridView(
+                    context, snapshot, isSeller, productViewModel);
               }
             },
           );
         },
       ),
       floatingActionButton: _fabButton(authService),
+    );
+  }
+
+  AnimationLimiter _productGridView(
+      BuildContext context,
+      AsyncSnapshot<List<Product>> snapshot,
+      bool isSeller,
+      ProductViewModel productViewModel) {
+    return AnimationLimiter(
+      child: GridView.builder(
+        padding: context.padding.low / 0.75,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: DoubleConstant.crossAxisCount.value.toInt(),
+          childAspectRatio: DoubleConstant.childAspectRatio.value,
+          crossAxisSpacing: DoubleConstant.ten.value,
+          mainAxisSpacing: DoubleConstant.ten.value,
+        ),
+        itemCount: snapshot.data!.length,
+        itemBuilder: (context, index) {
+          final product = snapshot.data![index];
+          return InkWell(
+            onTap: () => context.route.navigateName(
+              '/product_detail',
+              data: product,
+            ),
+            onLongPress: isSeller
+                ? () async {
+                    final bool? confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return _deleteProductDialog(product, context);
+                      },
+                    );
+                    if (confirm == true) {
+                      try {
+                        await productViewModel.deleteProduct(product.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: ColorConstant.red,
+                            content: Text(
+                              '${product.name} silindi',
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: ColorConstant.red,
+                            content: Text(
+                              '${StringConstant.productDeleteError}: $e',
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  }
+                : null,
+            child: ProductCard(product: product, index: index),
+          );
+        },
+      ),
     );
   }
 

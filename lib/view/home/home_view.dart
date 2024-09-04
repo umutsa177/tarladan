@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/model/user.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
 import '../product/product_list_view.dart';
 import '../order/order_list_view.dart';
 
@@ -36,8 +37,8 @@ class _HomeViewState extends State<HomeView> {
           ? BottomNavigationBar(
               currentIndex: _selectedIndex,
               onTap: onItemTapped,
-              selectedFontSize: 14,
-              unselectedFontSize: 14,
+              selectedFontSize: FontSizeConstant.fourteen.value,
+              unselectedFontSize: FontSizeConstant.fourteen.value,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.shopping_cart_rounded),

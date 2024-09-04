@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
+import 'package:tarladan/utility/enums/icon_size.dart';
 import 'dart:io';
 import '../../viewModel/product_viewmodel.dart';
 import '../../model/product.dart';
@@ -46,20 +48,7 @@ class _AddProductViewState extends State<AddProductView> {
           key: _formKey,
           child: Column(
             children: [
-              GestureDetector(
-                onTap: _getImage,
-                child: Container(
-                  width: context.sized.width / 2.25,
-                  height: context.sized.width / 2.25,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: _image != null
-                      ? Image.file(_image!, fit: BoxFit.cover)
-                      : const Icon(Icons.add_a_photo, size: 50),
-                ),
-              ),
+              _addPhotoButton(context),
               SizedBox(height: context.sized.lowValue),
               _productNameTextForm(),
               SizedBox(height: context.sized.lowValue),
@@ -77,6 +66,26 @@ class _AddProductViewState extends State<AddProductView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  GestureDetector _addPhotoButton(BuildContext context) {
+    return GestureDetector(
+      onTap: _getImage,
+      child: Container(
+        width: context.sized.width / 2.25,
+        height: context.sized.width / 2.25,
+        decoration: BoxDecoration(
+          color: ColorConstant.greyShade200,
+          borderRadius: context.border.normalBorderRadius,
+        ),
+        child: _image != null
+            ? Image.file(_image!, fit: BoxFit.cover)
+            : Icon(
+                Icons.add_a_photo,
+                size: IconSize.normalIconSize.value,
+              ),
       ),
     );
   }

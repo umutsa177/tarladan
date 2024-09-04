@@ -109,11 +109,9 @@ class AuthService {
   Future<void> changePassword(
       String currentPassword, String newPassword) async {
     try {
-      // Mevcut kullanıcıyı al
       User? user = _auth.currentUser;
 
       if (user != null && user.email != null) {
-        // Kullanıcının kimlik bilgilerini yeniden doğrula
         AuthCredential credential = EmailAuthProvider.credential(
           email: user.email!,
           password: currentPassword,
@@ -124,11 +122,7 @@ class AuthService {
         } catch (e) {
           throw Exception('Mevcut şifre yanlış. Lütfen doğru şifreyi giriniz.');
         }
-
-        // Şifreyi güncelle
         await user.updatePassword(newPassword);
-
-        // Firestore'daki kullanıcı belgesini güncelle
         await _firestore.collection('users').doc(user.uid).update({
           'password': newPassword,
         });

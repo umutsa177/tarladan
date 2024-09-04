@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
+import 'package:tarladan/utility/enums/fontweight_constant.dart';
 import '../utility/constants/color_constant.dart';
 
 class OrderCard extends StatelessWidget {
@@ -22,7 +25,9 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: EdgeInsets.symmetric(
+          horizontal: DoubleConstant.eight.value,
+          vertical: DoubleConstant.four.value),
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -32,9 +37,9 @@ class OrderCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: TextStyle(
+                  fontSize: FontSizeConstant.eightteen.value,
+                  fontWeight: FontWeightConstant.bold.value,
                 ),
               ),
               context.sized.emptySizedHeightBoxLow,
@@ -44,9 +49,9 @@ class OrderCard extends StatelessWidget {
                   buildStatusChip(status),
                   Text(
                     price,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    style: TextStyle(
+                      fontSize: FontSizeConstant.sixteen.value,
+                      fontWeight: FontWeightConstant.medium.value,
                       color: ColorConstant.green,
                     ),
                   ),

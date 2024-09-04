@@ -6,6 +6,8 @@ import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
 import 'package:tarladan/utility/enums/fontweight_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../model/order.dart';
@@ -121,104 +123,27 @@ class _ProductDetailViewState extends State<ProductDetailView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  borderRadius: context.border.normalBorderRadius,
-                  image: DecorationImage(
-                    image: NetworkImage(product.imageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
+            Center(child: _productImage(context, product)),
             context.sized.emptySizedHeightBoxLow,
             Padding(
               padding: context.padding.horizontalNormal,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    product.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 30),
-                  ),
+                  _productNameText(product),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      FutureBuilder<String>(
-                        future: _getSellerName(product.sellerId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-                          return Text(
-                            "${StringConstant.seller}: ${snapshot.data ?? StringConstant.loading}",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: ColorConstant.grey),
-                          );
-                        },
-                      ),
-                      FutureBuilder<double>(
-                        future: _getAverageRating(product.id),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-                          final rating = snapshot.data ?? 0.0;
-                          return Container(
-                            height: context.sized.highValue / 2.25,
-                            width: context.sized.highValue / 1.35,
-                            decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: ColorConstant.greyShade300),
-                              borderRadius: context.border.highBorderRadius,
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.star_outlined,
-                                  color: ColorConstant.coral,
-                                ),
-                                Text(
-                                  rating.toStringAsFixed(1),
-                                  style: TextStyle(
-                                    fontWeight: FontWeightConstant.medium.value,
-                                    fontSize: 16,
-                                    color: ColorConstant.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                      _sellerNameText(product),
+                      _productAverageRating(product),
                     ],
                   ),
                   context.sized.emptySizedHeightBoxLow,
                   Text(product.description),
                   context.sized.emptySizedHeightBoxLow,
-                  Text(
-                    '${StringConstant.deliveryArea}: ${product.deliveryArea}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+                  _deliveryAreaText(product),
                   context.sized.emptySizedHeightBoxLow,
-                  Text(
-                    '${StringConstant.noDateDeliveryTime}: ${product.deliveryTime} gün',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+                  _deliveryTimeText(product),
                   context.sized.emptySizedHeightBoxLow,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,15 +155,122 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                     ],
                   ),
                   context.sized.emptySizedHeightBoxLow,
-                  const Text(StringConstant.comments,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  _commentsText(),
                   _buildReviewsList(product, orderViewModel),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Text _productNameText(Product product) {
+    return Text(
+      product.name,
+      style: TextStyle(
+        fontWeight: FontWeightConstant.bold.value,
+        fontSize: FontSizeConstant.thirty.value,
+      ),
+    );
+  }
+
+  FutureBuilder<String> _sellerNameText(Product product) {
+    return FutureBuilder<String>(
+      future: _getSellerName(product.sellerId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        return Text(
+          "${StringConstant.seller}: ${snapshot.data ?? StringConstant.loading}",
+          style: TextStyle(
+            fontWeight: FontWeightConstant.bold.value,
+            fontSize: FontSizeConstant.sixteen.value,
+            color: ColorConstant.grey,
+          ),
+        );
+      },
+    );
+  }
+
+  Container _productImage(BuildContext context, Product product) {
+    return Container(
+      width: DoubleConstant.productSize.value,
+      height: DoubleConstant.productSize.value,
+      decoration: BoxDecoration(
+        borderRadius: context.border.normalBorderRadius,
+        image: DecorationImage(
+          image: NetworkImage(product.imageUrl),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  FutureBuilder<double> _productAverageRating(Product product) {
+    return FutureBuilder<double>(
+      future: _getAverageRating(product.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        final rating = snapshot.data ?? 0.0;
+        return Container(
+          height: context.sized.highValue / 2.25,
+          width: context.sized.highValue / 1.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: ColorConstant.greyShade300),
+            borderRadius: context.border.highBorderRadius,
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.star_outlined,
+                color: ColorConstant.coral,
+              ),
+              Text(
+                rating.toStringAsFixed(1),
+                style: TextStyle(
+                  fontWeight: FontWeightConstant.medium.value,
+                  fontSize: FontSizeConstant.sixteen.value,
+                  color: ColorConstant.black,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Text _deliveryAreaText(Product product) {
+    return Text(
+      '${StringConstant.deliveryArea}: ${product.deliveryArea}',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  Text _deliveryTimeText(Product product) {
+    return Text(
+      '${StringConstant.noDateDeliveryTime}: ${product.deliveryTime} gün',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  Text _commentsText() {
+    return Text(
+      StringConstant.comments,
+      style: TextStyle(
+        fontSize: FontSizeConstant.twenty.value,
+        fontWeight: FontWeightConstant.bold.value,
       ),
     );
   }
@@ -250,9 +282,10 @@ class _ProductDetailViewState extends State<ProductDetailView> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: SizedBox(
-                height: context.sized.width / 2.25,
-                width: context.sized.width / 2.25,
-                child: IconConstant.loadingBar.toLottie),
+              height: context.sized.width / 2.25,
+              width: context.sized.width / 2.25,
+              child: IconConstant.loadingBar.toLottie,
+            ),
           );
         }
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -272,9 +305,10 @@ class _ProductDetailViewState extends State<ProductDetailView> {
 
                 return AnimationConfiguration.staggeredList(
                   position: index,
-                  duration: const Duration(milliseconds: 375),
+                  duration: Duration(
+                      milliseconds: DoubleConstant.milliseconds.value.toInt()),
                   child: SlideAnimation(
-                    verticalOffset: 50.0,
+                    verticalOffset: DoubleConstant.verticalOffset.value,
                     child: FadeInAnimation(
                       child: isReviewOwner
                           ? Slidable(
@@ -375,10 +409,11 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   Text _priceText(Product product) {
     return Text(
       '${product.price} TL',
-      style: const TextStyle(
-          fontSize: 25,
-          color: ColorConstant.black,
-          fontWeight: FontWeight.bold),
+      style: TextStyle(
+        fontSize: FontSizeConstant.twentyFive.value,
+        color: ColorConstant.black,
+        fontWeight: FontWeightConstant.bold.value,
+      ),
     );
   }
 
@@ -409,12 +444,11 @@ class _ProductDetailViewState extends State<ProductDetailView> {
         context.route.pop();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorConstant.green,
         fixedSize: Size.fromWidth(context.sized.width / 4.75),
       ),
-      child: const Text(
+      child: Text(
         StringConstant.buy,
-        style: TextStyle(fontSize: 12),
+        style: TextStyle(fontSize: FontSizeConstant.twelve.value),
       ),
     );
   }
@@ -434,7 +468,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           ),
           Text(
             '$_quantity',
-            style: const TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: FontSizeConstant.eightteen.value),
           ),
           IconButton(
             icon: const Icon(Icons.add),

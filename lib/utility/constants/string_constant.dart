@@ -102,4 +102,6 @@ class StringConstant {
   static const deleteReviewConfirmation =
       'Bu yorumu silmek istediğinizden emin misiniz?';
   static const saveChanges = "Değişiklikleri Kaydet";
+  static const orderDeletedSuccessfully = "Sipariş başarıyla silindi";
+  static const orderDeleteError = "Sipariş silinirken bir hata oluştu:";
 }

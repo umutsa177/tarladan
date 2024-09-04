@@ -3,6 +3,8 @@ import 'package:lottie/lottie.dart';
 
 enum IconConstant {
   userIcon('user_circle'),
+  shopping('shopping'),
+  basket('basket'),
   loadingBar('loading_bar');
 
   final String value;

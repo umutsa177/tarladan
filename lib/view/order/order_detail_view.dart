@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/fontsize_constant.dart';
 import 'package:tarladan/utility/enums/fontweight_constant.dart';
+import 'package:tarladan/utility/enums/icon_constant.dart';
+import 'package:tarladan/utility/enums/icon_size.dart';
 import '../../model/order.dart';
 import '../../model/product.dart';
 import '../../model/review.dart';
@@ -92,7 +96,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         future: productService.getProduct(_order.productId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: SizedBox(
+                  height: context.sized.width / 1.5,
+                  width: context.sized.width / 1.5,
+                  child: IconConstant.loadingBar.toLottie),
+            );
           } else if (snapshot.hasError) {
             return Center(child: Text('Hata oluştu: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
@@ -107,25 +116,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: context.border.normalBorderRadius,
-                        image: DecorationImage(
-                          image: NetworkImage(product.imageUrl),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                    child: _orderImage(context, product),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    '${StringConstant.orderID}: ${_order.id}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.sized.normalValue),
+                  _orderIdText(),
+                  SizedBox(height: context.sized.normalValue),
                   _buildInfoRow(StringConstant.product, product.name),
                   _buildInfoRow(
                       StringConstant.amountOrder, _order.quantity.toString()),
@@ -134,10 +129,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   _buildInfoRow(StringConstant.status, _order.status),
                   _buildInfoRow(
                       StringConstant.orderDate, _order.createdAt.toString()),
-                  const SizedBox(height: 16),
-                  const Text(StringConstant.deliveryInfo,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: context.sized.normalValue),
+                  _deliveryInfoText(),
                   context.sized.emptySizedHeightBoxLow,
                   _buildInfoRow(StringConstant.region, product.deliveryArea),
                   _buildInfoRow(StringConstant.estimatedDeliveryTime,
@@ -145,12 +138,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   if (_order.status == StringConstant.pending)
                     Padding(
                       padding: context.padding.onlyTopNormal,
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: _updateOrderStatus,
-                          child: const Text(StringConstant.buy),
-                        ),
-                      ),
+                      child: _buyButton(),
                     ),
                   if (_order.status == StringConstant.completed)
                     _buildReviewSection(),
@@ -163,6 +151,52 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     );
   }
 
+  Center _buyButton() {
+    return Center(
+      child: ElevatedButton(
+        style: const ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll<Color>(ColorConstant.green),
+        ),
+        onPressed: _updateOrderStatus,
+        child: const Text(StringConstant.buy),
+      ),
+    );
+  }
+
+  Text _deliveryInfoText() {
+    return Text(
+      StringConstant.deliveryInfo,
+      style: TextStyle(
+        fontSize: FontSizeConstant.eightteen.value,
+        fontWeight: FontWeightConstant.bold.value,
+      ),
+    );
+  }
+
+  Text _orderIdText() {
+    return Text(
+      '${StringConstant.orderID}: ${_order.id}',
+      style: TextStyle(
+        fontSize: FontSizeConstant.eightteen.value,
+        fontWeight: FontWeightConstant.bold.value,
+      ),
+    );
+  }
+
+  Container _orderImage(BuildContext context, Product product) {
+    return Container(
+      width: DoubleConstant.animationSize.value,
+      height: DoubleConstant.animationSize.value,
+      decoration: BoxDecoration(
+        borderRadius: context.border.normalBorderRadius,
+        image: DecorationImage(
+          image: NetworkImage(product.imageUrl),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
   Widget _buildReviewSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,17 +205,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         Text(
           StringConstant.evaluateProduct,
           style: TextStyle(
-              fontSize: 18, fontWeight: FontWeightConstant.bold.value),
+            fontSize: FontSizeConstant.eightteen.value,
+            fontWeight: FontWeightConstant.bold.value,
+          ),
         ),
         SizedBox(height: context.sized.lowValue),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(5, (index) {
+          children: List.generate(DoubleConstant.five.value.toInt(), (index) {
             return IconButton(
               icon: Icon(
                 index < _rating ? Icons.star : Icons.star_border,
-                color: Colors.amber,
-                size: 40,
+                color: ColorConstant.amber,
+                size: IconSize.lowIconSize.value,
               ),
               onPressed: () {
                 setState(() {
@@ -199,16 +235,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             hintText: StringConstant.writeYourComment,
             border: OutlineInputBorder(),
           ),
-          maxLines: 3,
+          maxLines: DoubleConstant.maxLines.value.toInt(),
         ),
         SizedBox(height: context.sized.normalValue),
         Center(
           child: ElevatedButton(
             onPressed: _submitReview,
-            style: const ButtonStyle(
-              backgroundColor:
-                  WidgetStatePropertyAll<Color>(ColorConstant.green),
-            ),
             child: const Text(StringConstant.send),
           ),
         ),
@@ -228,22 +260,24 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: context.padding.verticalLow / 2,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: context.sized.width / 2,
             child: Text(
               '$label:',
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeightConstant.bold.value),
+                fontSize: FontSizeConstant.sixteen.value,
+                fontWeight: FontWeightConstant.bold.value,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: FontSizeConstant.sixteen.value),
             ),
           ),
         ],

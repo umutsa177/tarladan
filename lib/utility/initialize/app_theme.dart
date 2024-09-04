@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
 
 @immutable
 class AppTheme {
@@ -12,12 +13,12 @@ class AppTheme {
       ).copyWith(
         cardTheme: CardTheme(
           color: ColorConstant.white,
-          elevation: 3,
+          elevation: DoubleConstant.twelve.value / 4,
           margin: context.padding.low / 2,
         ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: ColorConstant.lightGreenAccent,
-          elevation: 12,
+          elevation: DoubleConstant.twelve.value,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
@@ -25,10 +26,11 @@ class AppTheme {
               Size.fromWidth(context.sized.width / 2.5),
             ),
             backgroundColor:
-                WidgetStateProperty.all<Color>(ColorConstant.lightBlueAccent),
+                WidgetStateProperty.all<Color>(ColorConstant.green),
             foregroundColor:
                 WidgetStateProperty.all<Color>(ColorConstant.white),
-            elevation: WidgetStateProperty.all<double>(12),
+            elevation:
+                WidgetStateProperty.all<double>(DoubleConstant.twelve.value),
             padding: WidgetStateProperty.all<EdgeInsets>(
               context.padding.low,
             ),
@@ -37,13 +39,13 @@ class AppTheme {
             ),
           ),
         ),
-        snackBarTheme: const SnackBarThemeData(
-          elevation: 12,
-          contentTextStyle: TextStyle(color: ColorConstant.white),
+        snackBarTheme: SnackBarThemeData(
+          elevation: DoubleConstant.twelve.value,
+          contentTextStyle: const TextStyle(color: ColorConstant.white),
           backgroundColor: ColorConstant.green,
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          elevation: 12,
+          elevation: DoubleConstant.twelve.value,
           type: BottomNavigationBarType.shifting,
           backgroundColor: ColorConstant.greyShade300,
           selectedItemColor: ColorConstant.selectedItemColor,
@@ -57,7 +59,7 @@ class AppTheme {
           backgroundColor: ColorConstant.white,
           centerTitle: true,
         ),
-        cardColor: ColorConstant.greyBackground, // fix
+        cardColor: ColorConstant.greyShade200,
         chipTheme: const ChipThemeData(
           side: BorderSide(style: BorderStyle.none),
         ),

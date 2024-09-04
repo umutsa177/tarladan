@@ -3,6 +3,7 @@ import 'package:kartal/kartal.dart';
 import 'package:provider/provider.dart';
 import 'package:tarladan/utility/constants/color_constant.dart';
 import 'package:tarladan/utility/constants/string_constant.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
 import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../../viewModel/auth_viewmodel.dart';
 import '../../widgets/auth_texfield.dart';
@@ -26,21 +27,9 @@ class LoginView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AuthTextfield(
-                      controller: _emailController,
-                      labelText: StringConstant.mail,
-                      icon: const Icon(Icons.mail_outline_outlined),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                    _mailTextField(),
                     context.sized.emptySizedHeightBoxLow,
-                    AuthTextfield(
-                      controller: _passwordController,
-                      labelText: StringConstant.password,
-                      keyboardType: TextInputType.visiblePassword,
-                      icon: const Icon(Icons.visibility_off),
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                    ),
+                    _passwordTextField(),
                     context.sized.emptySizedHeightBoxLow3x,
                     _signinButton(authViewModel, context),
                     context.sized.emptySizedHeightBoxLow,
@@ -48,20 +37,43 @@ class LoginView extends StatelessWidget {
                   ],
                 ),
               ),
-              if (authViewModel.isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Center(
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: IconConstant.loadingBar.toLottie,
-                    ),
-                  ),
-                ),
+              if (authViewModel.isLoading) _loadingBar(),
             ],
           );
         },
+      ),
+    );
+  }
+
+  AuthTextfield _passwordTextField() {
+    return AuthTextfield(
+      controller: _passwordController,
+      labelText: StringConstant.password,
+      keyboardType: TextInputType.visiblePassword,
+      icon: const Icon(Icons.visibility_off),
+      obscureText: true,
+      textInputAction: TextInputAction.done,
+    );
+  }
+
+  AuthTextfield _mailTextField() {
+    return AuthTextfield(
+      controller: _emailController,
+      labelText: StringConstant.mail,
+      icon: const Icon(Icons.mail_outline_outlined),
+      keyboardType: TextInputType.emailAddress,
+    );
+  }
+
+  Container _loadingBar() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Center(
+        child: SizedBox(
+          height: DoubleConstant.animationSize.value,
+          width: DoubleConstant.animationSize.value,
+          child: IconConstant.loadingBar.toLottie,
+        ),
       ),
     );
   }
@@ -99,12 +111,10 @@ class LoginView extends StatelessWidget {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
+                      backgroundColor: ColorConstant.redAccent,
                       content: Text(
-                    StringConstant.signInFailed,
-                    style: TextStyle(
-                      color: ColorConstant.redAccent,
-                    ),
-                  )),
+                        StringConstant.signInFailed,
+                      )),
                 );
               }
             },

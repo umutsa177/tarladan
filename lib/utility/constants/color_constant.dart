@@ -11,10 +11,10 @@ class ColorConstant {
   static const Color indigoAccent = Colors.indigoAccent;
   static const Color lightGreenAccent = Colors.lightGreenAccent;
   static Color greyShade300 = Colors.grey.shade300;
+  static Color greyShade200 = Colors.grey.shade200;
   static const grey = Colors.grey;
   static const Color red = Colors.red;
   static const Color redAccent = Colors.redAccent;
-  static const Color deepPurpleAccent = Colors.deepPurpleAccent;
   static const Color green = Colors.green;
   static const Color amber = Colors.amber;
   static const Color greenAccent = Colors.greenAccent;

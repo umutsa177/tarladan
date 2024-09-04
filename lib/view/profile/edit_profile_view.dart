@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:tarladan/utility/enums/double_constant.dart';
 import '../../service/auth_service.dart';
 import '../../utility/constants/string_constant.dart';
 import '../../utility/constants/color_constant.dart';
@@ -53,13 +54,13 @@ class _EditProfileViewState extends State<EditProfileView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildNameField(),
-              const SizedBox(height: 20),
+              SizedBox(height: context.sized.normalValue),
               _buildCurrentPasswordField(),
-              const SizedBox(height: 20),
+              SizedBox(height: context.sized.normalValue),
               _buildNewPasswordField(),
-              const SizedBox(height: 20),
+              SizedBox(height: context.sized.normalValue),
               _buildConfirmPasswordField(),
-              const SizedBox(height: 30),
+              SizedBox(height: context.sized.highValue / 2.5),
               _saveChangesButton(),
             ],
           ),
@@ -73,7 +74,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       onPressed: _updateProfile,
       style: ElevatedButton.styleFrom(
         backgroundColor: ColorConstant.black,
-        padding: const EdgeInsets.symmetric(vertical: 15),
+        padding: context.padding.verticalNormal,
       ),
       child: const Text(StringConstant.saveChanges),
     );
@@ -100,7 +101,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Lütfen isminizi giriniz';
+          return StringConstant.pleaseEnterName;
         }
         return null;
       },
@@ -113,13 +114,13 @@ class _EditProfileViewState extends State<EditProfileView> {
       keyboardType: TextInputType.visiblePassword,
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        labelText: 'Mevcut Şifre',
+        labelText: StringConstant.currentPassword,
         border: OutlineInputBorder(),
       ),
       obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Lütfen mevcut şifrenizi giriniz';
+          return StringConstant.pleaseEnterCurrentPassword;
         }
         return null;
       },
@@ -132,13 +133,15 @@ class _EditProfileViewState extends State<EditProfileView> {
       keyboardType: TextInputType.visiblePassword,
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        labelText: 'Yeni Şifre',
+        labelText: StringConstant.newPassword,
         border: OutlineInputBorder(),
       ),
       obscureText: true,
       validator: (value) {
-        if (value != null && value.isNotEmpty && value.length < 6) {
-          return 'Şifre en az 6 karakter olmalıdır';
+        if (value != null &&
+            value.isNotEmpty &&
+            value.length < DoubleConstant.six.value) {
+          return StringConstant.passwordMustBeAtLeast6Characters;
         }
         return null;
       },
@@ -151,13 +154,13 @@ class _EditProfileViewState extends State<EditProfileView> {
       keyboardType: TextInputType.visiblePassword,
       textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
-        labelText: 'Yeni Şifre (Tekrar)',
+        labelText: StringConstant.confirmNewPassword,
         border: OutlineInputBorder(),
       ),
       obscureText: true,
       validator: (value) {
         if (value != _newPasswordController.text) {
-          return 'Şifreler eşleşmiyor';
+          return StringConstant.passwordsDoNotMatch;
         }
         return null;
       },
@@ -186,7 +189,9 @@ class _EditProfileViewState extends State<EditProfileView> {
           await authViewModel.refreshUser();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profil başarıyla güncellendi')),
+            const SnackBar(
+              content: Text(StringConstant.profileUpdatedSuccessfully),
+            ),
           );
           context.route.pop(true);
         }
