@@ -176,7 +176,7 @@ class _AddProductViewState extends State<AddProductView> {
 
   TextFormField _amountTextForm() {
     return TextFormField(
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
           labelText: StringConstant.amount, border: OutlineInputBorder()),
@@ -188,7 +188,7 @@ class _AddProductViewState extends State<AddProductView> {
 
   TextFormField _deliveryTimeTextForm() {
     return TextFormField(
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
           labelText: StringConstant.deliveryTime, border: OutlineInputBorder()),
