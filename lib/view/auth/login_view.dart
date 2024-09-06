@@ -67,7 +67,7 @@ class LoginView extends StatelessWidget {
 
   Container _loadingBar() {
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: ColorConstant.black.withOpacity(0.5),
       child: Center(
         child: SizedBox(
           height: DoubleConstant.animationSize.value,

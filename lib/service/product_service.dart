@@ -4,7 +4,23 @@ import '../model/product.dart';
 class ProductService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProductsForSeller(String sellerId) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('products')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+      return snapshot.docs
+          .map((doc) =>
+              Product.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+    } catch (e) {
+      print('Error getting products for seller: $e');
+      return [];
+    }
+  }
+
+  Future<List<Product>> getAllProducts() async {
     try {
       QuerySnapshot snapshot = await _firestore.collection('products').get();
       return snapshot.docs
@@ -12,7 +28,7 @@ class ProductService {
               Product.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
     } catch (e) {
-      print(e.toString());
+      print('Error getting all products: $e');
       return [];
     }
   }

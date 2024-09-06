@@ -24,7 +24,7 @@ class StringConstant {
   static const deliveryTime = 'Teslimat Süresi(gün)';
   static const noDateDeliveryTime = 'Teslimat Süresi';
   static const deliveryArea = 'Teslimat Bölgesi';
-  static const noProductYet = 'Henüz ürün yok.';
+  static const noProductYet = 'Henüz ürün yok';
   static const noNameSeller = 'İsimsiz Satıcı';
   static const unknownSeller = 'Bilinmeyen Satıcı';
   static const noSellerInfo = 'Satıcı Bilgisi Alınamadı';

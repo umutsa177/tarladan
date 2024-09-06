@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tarladan/utility/constants/string_constant.dart';
 import 'dart:io';
 import '../model/product.dart';
 import '../service/product_service.dart';
@@ -36,7 +37,12 @@ class ProductViewModel extends ChangeNotifier {
   Future<List<Product>> getProducts() async {
     try {
       await Future.delayed(const Duration(seconds: 2));
-      return await _productService.getProducts();
+      if (_authViewModel.currentUser?.role == StringConstant.seller) {
+        return await _productService
+            .getProductsForSeller(_authViewModel.currentUser!.id);
+      } else {
+        return await _productService.getAllProducts();
+      }
     } catch (e) {
       print('Error getting products: $e');
       return [];
