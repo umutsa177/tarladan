@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
 import 'package:tarladan/utility/enums/double_constant.dart';
+import 'package:tarladan/utility/enums/icon_constant.dart';
 import '../../service/auth_service.dart';
 import '../../utility/constants/string_constant.dart';
 import '../../utility/constants/color_constant.dart';
@@ -169,6 +170,20 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   void _updateProfile() async {
     if (_formKey.currentState!.validate()) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return Center(
+            child: SizedBox(
+              width: DoubleConstant.animationSize.value,
+              height: DoubleConstant.animationSize.value,
+              child: IconConstant.loadingBar.toLottie,
+            ),
+          );
+        },
+      );
+
       try {
         final authViewModel =
             Provider.of<AuthViewModel>(context, listen: false);
@@ -193,12 +208,18 @@ class _EditProfileViewState extends State<EditProfileView> {
               content: Text(StringConstant.profileUpdatedSuccessfully),
             ),
           );
-          context.route.pop(true);
+
+          context.route.pop();
+          context.route.navigateName('/profile');
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Hata: ${e.toString()}')),
         );
+      } finally {
+        if (Navigator.canPop(context)) {
+          context.route.pop();
+        }
       }
     }
   }
