@@ -18,6 +18,10 @@ class OrderViewModel extends ChangeNotifier {
     }
   }
 
+  Stream<List<CustomerOrder>> getOrdersAsStream(String userId) {
+    return _orderService.getOrdersStream(userId);
+  }
+
   Future<void> removeOrder(String orderId) async {
     try {
       await _orderService.deleteOrder(orderId);

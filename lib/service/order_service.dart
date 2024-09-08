@@ -98,4 +98,14 @@ class OrderService {
       rethrow;
     }
   }
+
+  Stream<List<CustomerOrder>> getOrdersStream(String userId) {
+    return _firestore
+        .collection('orders')
+        .where('customerId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => CustomerOrder.fromMap(doc.data(), doc.id))
+            .toList());
+  }
 }

@@ -104,4 +104,5 @@ class StringConstant {
   static const saveChanges = "Değişiklikleri Kaydet";
   static const orderDeletedSuccessfully = "Sipariş başarıyla silindi";
   static const orderDeleteError = "Sipariş silinirken bir hata oluştu:";
+  static const errorOccurred = "Bir hata oluştu. Lütfen tekrar deneyin.";
 }
