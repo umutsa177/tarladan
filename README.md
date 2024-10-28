@@ -6,8 +6,8 @@
 ### Uygulama Özellikleri:
  - **E-posta ile Giriş:** Müşteriler ve çiftçiler, e-posta ve şifre ile uygulamaya giriş yapabilir.
  - **Şifre Yönetimi:** Müşteriler ve çiftçiler, kolayca şifrelerini değiştirebilir.
- - **Ürünün Sepet İşlemleri** Müşteriler, ürünleri sepete ekleyebilir ve satın alabilirler.
- - **Ürünleri Değerlendirme** Sadece ürünleri satın alan müşteriler, ürünler için yorum ve puanlama yapabilirler.
+ - **Ürünün Sepet İşlemleri:** Müşteriler, ürünleri sepete ekleyebilir ve satın alabilirler.
+ - **Ürünleri Değerlendirme:** Sadece ürünleri satın alan müşteriler, ürünler için yorum ve puanlama yapabilirler.
 
 ### [EN]
 - It is an application I made to bring the vegetables and fruits produced by farmers to the consumers.
@@ -16,8 +16,8 @@
 ### Application Features:
 - **Login by Email:** Customers and farmers can log into the application using their email and password.
 - **Password Management:** Customers and farmers can easily change their passwords.
-- **Product Basket Operations** Customers can add products to the basket and purchase them.
-- **Product Evaluation** Only customers who purchased the products can comment and rate the products.
+- **Product Basket Operations:** Customers can add products to the basket and purchase them.
+- **Product Evaluation:** Only customers who purchased the products can comment and rate the products.
 
 # Screenshots
 ## Authentication Pages
